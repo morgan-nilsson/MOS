@@ -14,7 +14,7 @@ puts:           ; print a string from register si
 
 .loop:
     lodsb       ; load a byte from the SI register to the al register
-    or si, si   ; check if null(0) is the next value in the string
+    or al, al   ; check if null(0) is the next value in the string
     jz .done
 
     mov ah, 0x0E; print the character
