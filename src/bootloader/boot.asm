@@ -1,52 +1,60 @@
 org 0x7c00
 bits 16
+start: jmp loader
 
-%define ENDL 0x0D,0x0A
+bpmOEM                  db "My os    "
 
-start:
-    jmp main
+bpbBytesPerSector:  	DW 512
+bpbSectorsPerCluster: 	DB 1
+bpbReservedSectors: 	DW 1
+bpbNumberOfFATs: 	    DB 2
+bpbRootEntries: 	    DW 224
+bpbTotalSectors: 	    DW 2880
+bpbMedia: 	            DB 0xF0
+bpbSectorsPerFAT: 	    DW 9
+bpbSectorsPerTrack: 	DW 18
+bpbHeadsPerCylinder: 	DW 2
+bpbHiddenSectors: 	    DD 0
+bpbTotalSectorsBig:     DD 0
+bsDriveNumber: 	        DB 0
+bsUnused: 	            DB 0
+bsExtBootSignature: 	DB 0x29
+bsSerialNumber:	        DD 0xa0a1a2a3
+bsVolumeLabel: 	        DB "MOS FLOPPY "
+bsFileSystem: 	        DB "FAT12   "
 
-puts:           ; print a string from register si
+msg db "Welcome", 0
 
-    push si     ; save the values in there registers to the stack                    
-    push ax
-    push bx
+;==========================================
+;   Print string
+    ;   ds=>si: null termanating string
+;==========================================
 
-.loop:
-    lodsb       ; load a byte from the SI register to the al register
-    or si, si   ; check if null(0) is the next value in the string
+puts:
+    lodsb
+    or al, al
     jz .done
-
-    mov ah, 0x0E; print the character
-    mov bh, 0   ; page zero
-    int 0x10
-
-    jmp .loop
+    mov ah, 0eh
+    int 10h
+    jmp puts
 
 .done:
-    pop bx
-    pop ax
-    pop si
     ret
 
-main:
-    mov ax, 0       ; set up the data segs
+;==========================================
+;       Entry point for bootloader
+;==========================================
+loader:
+
+    xor ax, ax
     mov ds, ax
     mov es, ax
-    
-    mov ss, ax      ; stack start 
-    mov sp, 0x7C00  ; set stack pointer to largest size
-                    ; stack will grow downwords
 
-    mov si, hello
+    mov si, msg
     call puts
 
+    cli
     hlt
-
-.halt:
-    jmp .halt
-
-hello: db 'Hello World', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0AA55h
