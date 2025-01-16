@@ -51,7 +51,7 @@ loader:
     mov cl, 0x02		    ; sector = 2
     mov dh, 0x00		    ; head = 0
 
-    mov ebx, 0x1000 ; address to read into
+    mov bx, 0x1000          ; address to read into
     int 0x13		        ; call the bios
 
     jc boot_error
