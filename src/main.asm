@@ -46,9 +46,23 @@ puts:
 ;==========================================
 loader:
 
-    xor ax, ax
-    mov ds, ax
+.Reset:
+    mov ah, 0		; reset floppy function
+    mov dl, 0		; drive 0
+    int 0x13		; call BIOS
+    jc .Reset		; if carry flag retry
+
+    mov ax, 0x1000	; we are reading 0x1000
     mov es, ax
+    xor bx, bx
+
+    mov ah, 0x02	; read sector
+    mov al, 1		; reading size 1 sector
+    mov ch, 1		; track = 1
+    mov cl, 2		; sector = 2
+    mov dh, 0		; head = 0
+    mov dl, 0		; drive zero ie from floppy
+    int 0x13		; call the bios
 
     mov si, msg
     call puts
@@ -58,3 +72,6 @@ loader:
 
 times 510-($-$$) db 0
 dw 0AA55h
+
+cli
+hlt
