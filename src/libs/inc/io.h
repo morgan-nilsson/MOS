@@ -4,5 +4,5 @@
 
 
 // write a char to thy screen
-void putc(const unsigned char c, const int x, const int y);
+void putc(const unsigned char c);
 void puts(const unsigned char *s);

@@ -1,22 +1,27 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 1M;  /* Start Stage 2 at 1MB (after Stage 1) */
+    . = 0x2000;
     
     .text : {
-        *(.text)   /* Put all code in the .text section here */
+        *(.text)      /* Code section */
     }
 
     .data : {
-        *(.data)   /* Initialized data section */
+        _data = .;    /* Start of .data section */
+        *(.data)      /* Initialized data */
+        _edata = .;   /* End of .data section */
     }
 
     .bss : {
-        *(.bss)    /* Uninitialized data section */
+        _bss = .;     /* Start of .bss section */
+        *(.bss)       /* Uninitialized data */
+        _ebss = .;    /* End of .bss section */
     }
-    /* Linker Script for Bare-Metal 32-bit x86 System */
 
     /DISCARD/ : {
-        *(.comment)  /* Discard any comments or unwanted sections */
+        *(.comment)
     }
+
+    _end = .;         /* End of all sections */
 }

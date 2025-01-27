@@ -1,19 +1,22 @@
 #include "../inc/io.h"
 
-void putc(const unsigned char c, const int x, const int y) {
+unsigned int x = 0;
+
+void putc(const unsigned char c) {
     unsigned short *video_memory = (unsigned short*)0xB8000;
-    
-    unsigned short offset = (y * VGA_WIDTH + x);
-    
-    video_memory[offset] = (c | 0x0700);
+
+    video_memory[x++] = (c | 0x0700);
+    if (x >= 80 * 25) {
+        x = 0;
+    }
+    return;
 }
 
-
 void puts(const unsigned char *s) {
-    unsigned short *video_memory = (unsigned short*)0xB8000;
-
-    unsigned int i = 0;
-    while(s[i] != '\0') {
-        video_memory[i] = (s[i]);
+    if (*s == '\0') putc('!');
+    while(*s != '\0') {
+        putc(*s);
+        ++s;
     }
+    return;
 }

@@ -4,6 +4,7 @@ jmp main
 
 boot2Loaded db "bootloader2 loaded", 10, 13, 0
 msgKernelFailed db "Unable to read kernel to memory", 10, 13, 0
+enteredProtectedMode db "Entered protected mode", 0
 
 puts:
     lodsb
@@ -95,5 +96,25 @@ start_protected_mode:
     mov ss, ax
     mov sp, 0x7c00
 
-cli
-call 0x2000
+    jmp enterKernel
+    mov edx, enteredProtectedMode
+    mov esi, 0xb8000
+
+protectedModeMsg:
+
+    mov al, [edx]
+    or al, al
+    jz enterKernel
+    mov [esi], al
+
+    add esi, 2
+    add edx, 1
+
+    jmp protectedModeMsg
+
+enterKernel:
+
+    cli
+    call 0x2000
+
+    hlt
