@@ -59,7 +59,7 @@ DONE | strcmp / strncmp	Compare strings
 DONE | strlen	Get string length
 DONE | strchr / strrchr	Find a character in a string
 DONE | strstr	Find a substring
-strtok	Tokenize a string (split by delimiter)
+DONE | strtok	Tokenize a string (split by delimiter)
 DONE | memcpy
 memmove
 DONE | memset
@@ -74,15 +74,15 @@ free	Free allocated memory
 
 4️⃣ Mathematical Functions — <math.h>
 Function	Description
-abs / labs	Absolute value (int, long)
-fabs	Absolute value (float, double)
-pow	Exponentiation (x^y)
-sqrt	Square root
-ceil / floor	Round up/down
-sin / cos / tan	Trigonometric functions
-asin / acos / atan	Inverse trigonometric functions
-exp	Exponential function (e^x)
-log / log10	Natural and base-10 logarithm
+DONE | abs / labs	Absolute value (int, long)
+DONE | fabs	Absolute value (float, double)
+DONE | pow	Exponentiation (x^y)
+DONE | sqrt	Square root
+DONE | ceil / floor	Round up/down
+DONE | sin / cos / tan	Trigonometric functions
+DONE | asin / acos / atan	Inverse trigonometric functions
+DONE | exp	Exponential function (e^x)
+DONE | log / log10	Natural and base-10 logarithm
 
 5️⃣ Character Handling — <ctype.h>
 Function	Description

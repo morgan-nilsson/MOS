@@ -100,6 +100,28 @@ char *strstr(const char *haystack, const char *needle) {
     return NULL;
 }
 
+char *strtok(char *str, const char *delim) {
+    static char *last = NULL;
+    if (str) last = str;
+    if (!last) return NULL;
+    char *start = last;
+    while (*last) {
+        const char *d = delim;
+        while (*d) {
+            if (*last == *d) {
+                *last = '\0';
+                last++;
+                if (*last == '\0') last = NULL;
+                return start;
+            }
+            d++;
+        }
+        last++;
+    }
+    last = NULL;
+    return start;
+}
+
 // copys n bytes from src to dest
 void memcpy(void *dest, const void *src, unsigned int nbytes) {
     unsigned char *d = (unsigned char*)dest;

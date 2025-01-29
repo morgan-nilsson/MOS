@@ -19,7 +19,7 @@ BOOT_IMG=$(BUILD_DIR)/boot.img
 STAGE1_BOOT=$(BUILD_DIR)/boot1.bin
 STAGE2_BOOT=$(BUILD_DIR)/boot2.bin
 KERNEL_BIN=$(BUILD_DIR)/kernel.bin
-LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o
+LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o
 LIBS_OBJ_FILES=$(addprefix $(BUILD_DIR)/, $(LIBS_OBJ_FILE_NAMES))
 
 BUILD_TOOLS=$(SRC_DIR)/buildTools
@@ -60,6 +60,12 @@ $(BUILD_DIR)/ctype.o: $(LIBS_SRC_DIR)/ctype.c | $(BUILD_DIR)
 
 $(BUILD_DIR)/keyboard_driver.o: $(LIBS_SRC_DIR)/keyboard_driver.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/keyboard_driver.c -o $(BUILD_DIR)/keyboard_driver.o
+
+$(BUILD_DIR)/stdlib.o: $(LIBS_SRC_DIR)/stdlib.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/stdlib.c -o $(BUILD_DIR)/stdlib.o
+
+$(BUILD_DIR)/math.o: $(LIBS_SRC_DIR)/math.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/math.c -o $(BUILD_DIR)/math.o
 
 run:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw
