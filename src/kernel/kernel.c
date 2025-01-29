@@ -3,9 +3,12 @@
 #include "../libs/inc/string.h"
 
 void _start(void) { 
-    const char* msg = "Hello world\n";
+    char *str = "a\n";
 
-    write_string(msg);
+    for (int i = 'a'; i <= 'z'; i++) {
+        str[0] = i;
+        write_string(str);
+    }
 
     while(1);
 }

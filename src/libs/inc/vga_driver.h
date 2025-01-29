@@ -1,3 +1,6 @@
+#ifndef VGA_DRIVER_H
+#define VGA_DRIVER_H
+
 #define VGA_CTRL_REG 0x3d4
 #define VGA_DATA_REG 0x3d5
 #define VGA_OFFSET_LOW 0x0f
@@ -13,3 +16,6 @@ void set_cursor(int offset);
 int get_cursor(void);
 void write_char(char c);
 void write_string(const char* s);
+void clear_screen();
+
+#endif

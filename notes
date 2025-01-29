@@ -56,12 +56,13 @@ Function	Description
 strcpy / strncpy	Copy a string
 strcat / strncat	Concatenate strings
 strcmp / strncmp	Compare strings
-strlen	Get string length
+DONE | strlen	Get string length
 strchr / strrchr	Find a character in a string
 strstr	Find a substring
 strtok	Tokenize a string (split by delimiter)
-memcpy / memmove	Copy memory blocks
-memset	Fill memory with a value
+DONE | memcpy
+memmove
+DONE | memset
 memcmp	Compare memory blocks
 
 3️⃣ Memory Management — <stdlib.h>
