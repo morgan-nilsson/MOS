@@ -13,7 +13,6 @@ void putc(const unsigned char c) {
 }
 
 void puts(const unsigned char *s) {
-    if (*s == '\0') putc('!');
     while(*s != '\0') {
         putc(*s);
         ++s;

@@ -1,0 +1,122 @@
+BUGS:
+    DONE | kernel.c not getting coppied to its kernel.bin fully | Bootloader wasnt reading all of the kernel to memory
+
+
+
+Display driver
+
+Implement a VESA framebuffer driver (if using BIOS/UEFI).
+If working with modern GPUs, interact with the PCI bus to detect the GPU.
+Implement a basic 2D graphics API (setPixel, drawLine, drawRect).
+Develop a user-space interface (so applications can draw to the screen).
+
+
+Option 1: Write Your Own GPU Driver
+Option 2: Use an Existing Open-Source Driver
+
+
+3️⃣ Step 3: Implement OpenGL API (User-Space)
+
+Provide a minimal libc and POSIX compatibility layer.
+Implement OpenGL API calls by forwarding them to your GPU driver.
+Support double-buffering and V-Sync for smooth rendering.
+🔧 Tools & References
+Mesa3D Source Code: https://mesa3d.org/
+TinyGL (A lightweight OpenGL alternative)
+4️⃣ Step 4: Implement OpenGL Extensions & Optimization
+
+Implement texture support (GL_TEXTURE_2D, GL_TEXTURE_3D).
+Implement vertex buffers (VBOs) and shaders.
+Optimize GPU memory allocation.
+Support multi-threaded rendering.
+
+Step	Goal	Tools/References
+1️⃣ Framebuffer	Get pixels on screen	VESA, UEFI GOP, PCI
+2️⃣ GPU Driver	Enable GPU acceleration	PCI, MMIO, Linux DRM
+3️⃣ OpenGL API	Implement OpenGL functions	Mesa3D, TinyGL
+4️⃣ Optimization	Add textures, shaders, VBOs	OpenGL Red Book
+
+
+Input/Output (I/O) — <stdio.h>
+Function	Description
+printf / fprintf / sprintf / snprintf	Print formatted text to stdout, file, or string
+scanf / fscanf / sscanf	Read formatted input from stdin, file, or string
+putchar / fputc	Print a single character
+puts / fputs	Print a string
+getchar / fgetc	Read a single character
+gets (unsafe, avoid!)	Read a string (deprecated)
+fopen / fclose	Open/close a file
+fread / fwrite	Read/write binary data
+fseek / ftell / rewind	Move file pointer
+feof / ferror	Check file state
+fflush	Flush file buffer
+
+2️⃣ String Handling — <string.h>
+Function	Description
+strcpy / strncpy	Copy a string
+strcat / strncat	Concatenate strings
+strcmp / strncmp	Compare strings
+strlen	Get string length
+strchr / strrchr	Find a character in a string
+strstr	Find a substring
+strtok	Tokenize a string (split by delimiter)
+memcpy / memmove	Copy memory blocks
+memset	Fill memory with a value
+memcmp	Compare memory blocks
+
+3️⃣ Memory Management — <stdlib.h>
+Function	Description
+malloc	Allocate memory
+calloc	Allocate and zero-initialize memory
+realloc	Resize allocated memory
+free	Free allocated memory
+
+4️⃣ Mathematical Functions — <math.h>
+Function	Description
+abs / labs	Absolute value (int, long)
+fabs	Absolute value (float, double)
+pow	Exponentiation (x^y)
+sqrt	Square root
+ceil / floor	Round up/down
+sin / cos / tan	Trigonometric functions
+asin / acos / atan	Inverse trigonometric functions
+exp	Exponential function (e^x)
+log / log10	Natural and base-10 logarithm
+
+5️⃣ Character Handling — <ctype.h>
+Function	Description
+isalpha	Check if a character is a letter
+isdigit	Check if a character is a digit
+isalnum	Check if a character is alphanumeric
+isspace	Check if a character is whitespace
+toupper / tolower	Convert case
+
+6️⃣ Random Numbers — <stdlib.h>
+Function	Description
+rand	Generate a pseudo-random number
+srand	Seed the random number generator
+
+7️⃣ Time & Date — <time.h>
+Function	Description
+time	Get current time
+clock	Get processor time used
+difftime	Compute time difference
+mktime	Convert time structure to timestamp
+strftime	Format time as a string
+
+8️⃣ Process & System Functions — <stdlib.h>
+exit	Terminate program
+system	Execute shell command
+getenv / setenv	Get/set environment variables
+
+9️⃣ Memory & Limits — <limits.h> and <stdint.h>
+INT_MAX, INT_MIN	Max/min values of int
+CHAR_MAX, CHAR_MIN	Max/min values of char
+SIZE_MAX	Max value of size_t
+UINT32_MAX	Max value of uint32_t
+
+<errno.h>	Defines error codes (e.g., ENOMEM, EIO)
+<assert.h>	Debugging assertions (assert())
+<fcntl.h>	File control options (open(), fcntl())
+<unistd.h>	POSIX system calls (read(), write(), fork())
+<signal.h>	Signal handling (kill(), signal())

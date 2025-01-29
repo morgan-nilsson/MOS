@@ -19,14 +19,14 @@ BOOT_IMG=$(BUILD_DIR)/boot.img
 STAGE1_BOOT=$(BUILD_DIR)/boot1.bin
 STAGE2_BOOT=$(BUILD_DIR)/boot2.bin
 KERNEL_BIN=$(BUILD_DIR)/kernel.bin
-LIBS_OBJ_FILES=$(BUILD_DIR)/io.o $(BUILD_DIR)/string.o
+LIBS_OBJ_FILES=$(BUILD_DIR)/io.o $(BUILD_DIR)/string.o $(BUILD_DIR)/vga_driver.o
 
 BUILD_TOOLS=$(SRC_DIR)/buildTools
 LD_FILE=$(BUILD_TOOLS)/linker.ld
 
 $(BOOT_IMG): $(BUILD_DIR)/boot1.bin $(BUILD_DIR)/boot2.bin $(BUILD_DIR)/kernel.bin
-	# 1MB boot image
-	dd if=/dev/zero of=$(BOOT_IMG) bs=1M count=1
+	# 8MB boot image
+	dd if=/dev/zero of=$(BOOT_IMG) bs=8M count=1
 
 	# write stage 1
 	dd if=$(STAGE1_BOOT) of=$(BOOT_IMG) bs=512 seek=0 conv=notrunc
@@ -35,7 +35,7 @@ $(BOOT_IMG): $(BUILD_DIR)/boot1.bin $(BUILD_DIR)/boot2.bin $(BUILD_DIR)/kernel.b
 	dd if=$(STAGE2_BOOT) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc
 
 	# write kernel
-	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=3 conv=notrunc
+	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=3 conv=notrunc count=100
 	
 $(STAGE1_BOOT): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot1.asm -f bin -o $(STAGE1_BOOT)
@@ -43,9 +43,10 @@ $(STAGE1_BOOT): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR)
 $(STAGE2_BOOT): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(STAGE2_BOOT)
 
-$(KERNEL_BIN): $(KERNEL_DIR)/kernel.c $(LIBS_OBJ_FILES) | $(BUILD_DIR) 
+$(KERNEL_BIN): $(KERNEL_DIR)/kernel.c $(LIBS_OBJ_FILES) $(KERNEL_DIR)/kernel-entry.asm | $(BUILD_DIR) 
+	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/kernel-entry.asm -o $(BUILD_DIR)/kernel-entry.o
 	$(CC) $(CFLAGS) -c $(KERNEL_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
-	$(LD) -T $(LD_FILE) -m elf_i386 -o $(KERNEL_BIN) $(BUILD_DIR)/kernel.o $(LIBS_OBJ_FILES) --oformat binary
+	$(LD) -m elf_i386 -T $(LD_FILE) -o $(KERNEL_BIN) $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o $(LIBS_OBJ_FILES) --oformat binary
 
 $(BUILD_DIR)/io.o: $(LIBS_SRC_DIR)/io.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/io.c -o $(BUILD_DIR)/io.o
@@ -53,8 +54,8 @@ $(BUILD_DIR)/io.o: $(LIBS_SRC_DIR)/io.c | $(BUILD_DIR)
 $(BUILD_DIR)/string.o: $(LIBS_SRC_DIR)/string.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/string.c -o $(BUILD_DIR)/string.o
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)/vga_driver.o: $(LIBS_SRC_DIR)/vga_driver.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/vga_driver.c -o $(BUILD_DIR)/vga_driver.o
 
 run:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw
