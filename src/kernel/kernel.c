@@ -1,4 +1,3 @@
-#include "../libs/inc/io.h"
 #include "../libs/inc/vga_driver.h"
 #include "../libs/inc/string.h"
 

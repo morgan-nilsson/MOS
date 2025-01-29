@@ -54,11 +54,11 @@ fflush	Flush file buffer
 2️⃣ String Handling — <string.h>
 Function	Description
 DONE | strcpy / strncpy	Copy a string
-strcat / strncat	Concatenate strings
+DONE | strcat / strncat	Concatenate strings
 DONE | strcmp / strncmp	Compare strings
 DONE | strlen	Get string length
-strchr / strrchr	Find a character in a string
-strstr	Find a substring
+DONE | strchr / strrchr	Find a character in a string
+DONE | strstr	Find a substring
 strtok	Tokenize a string (split by delimiter)
 DONE | memcpy
 memmove
