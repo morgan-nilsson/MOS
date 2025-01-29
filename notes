@@ -53,9 +53,9 @@ fflush	Flush file buffer
 
 2️⃣ String Handling — <string.h>
 Function	Description
-strcpy / strncpy	Copy a string
+DONE | strcpy / strncpy	Copy a string
 strcat / strncat	Concatenate strings
-strcmp / strncmp	Compare strings
+DONE | strcmp / strncmp	Compare strings
 DONE | strlen	Get string length
 strchr / strrchr	Find a character in a string
 strstr	Find a substring
@@ -63,7 +63,7 @@ strtok	Tokenize a string (split by delimiter)
 DONE | memcpy
 memmove
 DONE | memset
-memcmp	Compare memory blocks
+DONE | memcmp	Compare memory blocks
 
 3️⃣ Memory Management — <stdlib.h>
 Function	Description
@@ -86,11 +86,11 @@ log / log10	Natural and base-10 logarithm
 
 5️⃣ Character Handling — <ctype.h>
 Function	Description
-isalpha	Check if a character is a letter
-isdigit	Check if a character is a digit
-isalnum	Check if a character is alphanumeric
-isspace	Check if a character is whitespace
-toupper / tolower	Convert case
+DONE | isalpha	Check if a character is a letter
+DONE | isdigit	Check if a character is a digit
+DONE | isalnum	Check if a character is alphanumeric
+DONE | isspace	Check if a character is whitespace
+DONE | toupper / tolower	Convert case
 
 6️⃣ Random Numbers — <stdlib.h>
 Function	Description
