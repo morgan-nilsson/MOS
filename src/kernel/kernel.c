@@ -2,6 +2,7 @@
 #include "../libs/inc/string.h"
 #include "../libs/inc/keyboard_driver.h"
 #include "../libs/inc/isr.h"
+#include "../libs/inc/stdlib.h"
 
 void _start(void) { 
     clear_screen();
