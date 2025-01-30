@@ -19,7 +19,7 @@ BOOT_IMG=$(BUILD_DIR)/boot.img
 STAGE1_BOOT=$(BUILD_DIR)/boot1.bin
 STAGE2_BOOT=$(BUILD_DIR)/boot2.bin
 KERNEL_BIN=$(BUILD_DIR)/kernel.bin
-LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o	kernel-entry.o interrupt.o stdio.o isr.o idt.o
+LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o	kernel-entry.o interrupt.o stdio.o isr.o idt.o timer.o
 LIBS_OBJ_FILES=$(addprefix $(BUILD_DIR)/, $(LIBS_OBJ_FILE_NAMES))
 
 BUILD_TOOLS=$(SRC_DIR)/buildTools
@@ -80,6 +80,9 @@ $(BUILD_DIR)/isr.o: $(LIBS_SRC_DIR)/isr.c | $(BUILD_DIR)
 
 $(BUILD_DIR)/idt.o: $(LIBS_SRC_DIR)/idt.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/idt.c -o $(BUILD_DIR)/idt.o
+
+$(BUILD_DIR)/timer.o: $(LIBS_SRC_DIR)/timer.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/timer.c -o $(BUILD_DIR)/timer.o
 
 run:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw

@@ -8,7 +8,9 @@
 #include "../inc/bool.h"
 #include "../inc/stdtypes.h"
 
+#ifndef NULL
 #define NULL ((void *)0)
+#endif
 
 // memory manigment struct is a dLL
 typedef struct mem_block {

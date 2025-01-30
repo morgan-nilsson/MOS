@@ -3,6 +3,7 @@
 #include "../libs/inc/keyboard_driver.h"
 #include "../libs/inc/isr.h"
 #include "../libs/inc/stdlib.h"
+#include "../libs/inc/timer.h"
 
 void _start(void) { 
     clear_screen();
@@ -15,6 +16,9 @@ void _start(void) {
     write_string("Installing keyboard driver\n");
     init_keyboard();
     write_string("Keyboard driver installed\n");
+
+    write_string("Installing timer\n");
+    init_timer(50);
 
     while (1);
 }

@@ -1,7 +1,9 @@
 #ifndef STRING_H
 #define STRING_H
 
+#ifndef NULL
 #define NULL ((char *)0)
+#endif
 // length of a null termanating string
 unsigned int strlen(const char *s);
 void strcpy(char* dest, const char* src);
