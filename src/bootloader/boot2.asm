@@ -36,7 +36,7 @@ loadKernel:
     mov es, ax
 
     mov ah, 0x02
-    mov al, 0x10        ; reading size 16 sectors
+    mov al, 0x40        ; reading 0x40 sector
     mov ch, 0x00
     mov cl, 0x04        ; sector = 4
     mov dh, 0x00        ; head = 0

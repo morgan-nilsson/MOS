@@ -19,7 +19,7 @@ BOOT_IMG=$(BUILD_DIR)/boot.img
 STAGE1_BOOT=$(BUILD_DIR)/boot1.bin
 STAGE2_BOOT=$(BUILD_DIR)/boot2.bin
 KERNEL_BIN=$(BUILD_DIR)/kernel.bin
-LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o
+LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o	kernel-entry.o interrupt.o stdio.o isr.o idt.o
 LIBS_OBJ_FILES=$(addprefix $(BUILD_DIR)/, $(LIBS_OBJ_FILE_NAMES))
 
 BUILD_TOOLS=$(SRC_DIR)/buildTools
@@ -45,7 +45,6 @@ $(STAGE2_BOOT): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(STAGE2_BOOT)
 
 $(KERNEL_BIN): $(KERNEL_DIR)/kernel.c $(LIBS_OBJ_FILES) $(KERNEL_DIR)/kernel-entry.asm | $(BUILD_DIR) 
-	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/kernel-entry.asm -o $(BUILD_DIR)/kernel-entry.o
 	$(CC) $(CFLAGS) -c $(KERNEL_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
 	$(LD) -m elf_i386 -T $(LD_FILE) -o $(KERNEL_BIN) $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o $(LIBS_OBJ_FILES) --oformat binary
 
@@ -61,11 +60,26 @@ $(BUILD_DIR)/ctype.o: $(LIBS_SRC_DIR)/ctype.c | $(BUILD_DIR)
 $(BUILD_DIR)/keyboard_driver.o: $(LIBS_SRC_DIR)/keyboard_driver.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/keyboard_driver.c -o $(BUILD_DIR)/keyboard_driver.o
 
+$(BUILD_DIR)/interrupt.o: $(KERNEL_DIR)/interrupt.asm | $(BUILD_DIR)
+	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/interrupt.asm -o $(BUILD_DIR)/interrupt.o
+
 $(BUILD_DIR)/stdlib.o: $(LIBS_SRC_DIR)/stdlib.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/stdlib.c -o $(BUILD_DIR)/stdlib.o
 
 $(BUILD_DIR)/math.o: $(LIBS_SRC_DIR)/math.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/math.c -o $(BUILD_DIR)/math.o
+
+$(BUILD_DIR)/kernel-entry.o: $(KERNEL_DIR)/kernel-entry.asm | $(BUILD_DIR)
+	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/kernel-entry.asm -o $(BUILD_DIR)/kernel-entry.o
+
+$(BUILD_DIR)/stdio.o: $(LIBS_SRC_DIR)/stdio.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/stdio.c -o $(BUILD_DIR)/stdio.o
+
+$(BUILD_DIR)/isr.o: $(LIBS_SRC_DIR)/isr.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/isr.c -o $(BUILD_DIR)/isr.o
+
+$(BUILD_DIR)/idt.o: $(LIBS_SRC_DIR)/idt.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/idt.c -o $(BUILD_DIR)/idt.o
 
 run:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw

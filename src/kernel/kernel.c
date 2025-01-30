@@ -1,13 +1,19 @@
 #include "../libs/inc/vga_driver.h"
 #include "../libs/inc/string.h"
+#include "../libs/inc/keyboard_driver.h"
+#include "../libs/inc/isr.h"
 
 void _start(void) { 
-    char *str = "a\n";
+    clear_screen();
+    write_string("Installing isrs\n");
+    isr_install();
 
-    for (int i = 'a'; i <= 'z'; i++) {
-        str[0] = i;
-        write_string(str);
-    }
+    write_string("Enabling external interrupts\n");
+    asm volatile("sti");
 
-    while(1);
+    write_string("Installing keyboard driver\n");
+    init_keyboard();
+    write_string("Keyboard driver installed\n");
+
+    while (1);
 }

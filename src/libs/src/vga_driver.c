@@ -1,16 +1,7 @@
 #include "../inc/vga_driver.h"
 #include "../inc/string.h"
-
-unsigned char port_byte_in(unsigned short port) {
-    unsigned char result;
-    __asm__("in %%dx, %%al" : "=a" (result) : "d" (port));
-    return result;
-}
-
-void port_byte_out(unsigned short port, unsigned char data) {
-    __asm__("out %%al, %%dx" : : "a" (data), "d" (port));
-    return;
-}
+#include "../inc/stdio.h"
+#include "../inc/stdtypes.h"
 
 void set_cursor(int offset) {
     offset = offset / 2;
@@ -76,6 +67,12 @@ void clear_screen() {
     set_cursor(get_offset(0, 0));
 }
 
+void write_newline() {
+    int offset = get_cursor();
+    offset = get_newline_offset(offset);
+    set_cursor(offset);
+}
+
 void write_string(const char *s) {
     int offset = get_cursor();
     int index = 0;
@@ -94,4 +91,195 @@ void write_string(const char *s) {
     set_cursor(offset);
     int i = 0xff;
     return;
+}
+
+// PS-2 compatable
+void print_letter(uint8_t scancode) {
+    switch(scancode) {
+        case 0x00:
+            write_string("ERROR");
+            break;
+        case 0x01:
+            write_string("ESC");
+            break;
+        case 0x02:
+            write_string("1");
+            break;
+        case 0x03:
+            write_string("2");
+            break;
+        case 0x04:
+            write_string("3");
+            break;
+        case 0x05:
+            write_string("4");
+            break;
+        case 0x06:
+            write_string("5");
+            break;
+        case 0x07:
+            write_string("6");
+            break;
+        case 0x08:
+            write_string("7");
+            break;
+        case 0x09:
+            write_string("8");
+            break;
+        case 0x0A:
+            write_string("9");
+            break;
+        case 0x0B:
+            write_string("0");
+            break;
+        case 0x0C:
+            write_string("-");
+            break;
+        case 0x0D:
+            write_string("=");
+            break;
+        case 0x0E:
+            write_string("BACKSPACE");
+            break;
+        case 0x0F:
+            write_string("TAB");
+            break;
+        case 0x10:
+            write_string("Q");
+            break;
+        case 0x11:
+            write_string("W");
+            break;
+        case 0x12:
+            write_string("E");
+            break;
+        case 0x13:
+            write_string("R");
+            break;
+        case 0x14:
+            write_string("T");
+            break;
+        case 0x15:
+            write_string("Y");
+            break;
+        case 0x16:
+            write_string("U");
+            break;
+        case 0x17:
+            write_string("I");
+            break;
+        case 0x18:
+            write_string("O");
+            break;
+        case 0x19:
+            write_string("P");
+            break;
+        case 0x1A:
+            write_string("[");
+            break;
+        case 0x1B:
+            write_string("]");
+            break;
+        case 0x1C:
+            write_string("ENTER");
+            break;
+        case 0x1D:
+            write_string("LEFT CTRL");
+            break;
+        case 0x1E:
+            write_string("A");
+            break;
+        case 0x1F:
+            write_string("S");
+            break;
+        case 0x20:
+            write_string("D");
+            break;
+        case 0x21:
+            write_string("F");
+            break;
+        case 0x22:
+            write_string("G");
+            break;
+        case 0x23:
+            write_string("H");
+            break;
+        case 0x24:
+            write_string("J");
+            break;
+        case 0x25:
+            write_string("K");
+            break;
+        case 0x26:
+            write_string("L");
+            break;
+        case 0x27:
+            write_string(";");
+            break;
+        case 0x28:
+            write_string("'");
+            break;
+        case 0x29:
+            write_string("`");
+            break;
+        case 0x2A:
+            write_string("LEFT SHIFT");
+            break;
+        case 0x2B:
+            write_string("\\");
+            break;
+        case 0x2C:
+            write_string("Z");
+            break;
+        case 0x2D:
+            write_string("X");
+            break;
+        case 0x2E:
+            write_string("C");
+            break;
+        case 0x2F:
+            write_string("V");
+            break;
+        case 0x30:
+            write_string("B");
+            break;
+        case 0x31:
+            write_string("N");
+            break;
+        case 0x32:
+            write_string("M");
+            break;
+        case 0x33:
+            write_string(",");
+            break;
+        case 0x34:
+            write_string(".");
+            break;
+        case 0x35:
+            write_string("/");
+            break;
+        case 0x36:
+            write_string("RIGHT SHIFT");
+            break;
+        case 0x37:
+            write_string("KP*");
+            break;
+        case 0x38:
+            write_string("LEFT ALT");
+            break;
+        case 0x39:
+            write_string("SPACE");
+            break;
+
+        default:
+            if (scancode <= 0x7f) {
+                write_string("UNKNOWN KEY");
+            } else if (scancode <= 0x39 + 0x80) {
+                write_string("KEY RELEASED: ");
+                print_letter(scancode - 0x80);
+            } else {
+                write_string("UNKNOWN KEY UP");
+            }
+            break;
+    }
 }
