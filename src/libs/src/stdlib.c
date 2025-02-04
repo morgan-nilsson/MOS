@@ -1,4 +1,4 @@
-#include "../inc/stdlib.h"
+#include "../include/stdlib.h"
 
 char* mem[MEM_BLOCK_SIZE];
 static mem_block_t *mem_start;

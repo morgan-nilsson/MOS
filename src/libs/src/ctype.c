@@ -1,4 +1,4 @@
-#include "../inc/ctype.h"
+#include "../include/ctype.h"
 
 int isalpah(int c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');

@@ -1,4 +1,4 @@
-#include "../inc/string.h"
+#include "../include/string.h"
 
 unsigned int strlen(const char *s) {
     if (s == 0) return 0;

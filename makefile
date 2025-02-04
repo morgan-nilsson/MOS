@@ -6,83 +6,93 @@ ASM64_FLAGS=-f elf64
 CC=i686-elf-gcc
 CFLAGS=-ffreestanding -nostdlib -m32 -g
 LD = i686-elf-ld
+LD_FLAGS = -m elf_i386 -T $(LD_FILE) --oformat binary
 
-SRC_DIR=src
 BUILD_DIR=build
+SRC_DIR=src
 BOOTLOADER_DIR=$(SRC_DIR)/bootloader
-KERNEL_DIR=$(SRC_DIR)/kernel
-LIBS_DIR=$(SRC_DIR)/libs
-LIBS_INC_DIR=$(LIBS_DIR)/inc
-LIBS_SRC_DIR=$(LIBS_DIR)/src
+KERNEL_DIR=$(SRC_DIR)/kernel/src
+DRIVERS_DIR=$(SRC_DIR)/driver/src
+LIBS_DIR=$(SRC_DIR)/libs/src
 
 BOOT_IMG=$(BUILD_DIR)/boot.img
-STAGE1_BOOT=$(BUILD_DIR)/boot1.bin
-STAGE2_BOOT=$(BUILD_DIR)/boot2.bin
-KERNEL_BIN=$(BUILD_DIR)/kernel.bin
-LIBS_OBJ_FILE_NAMES=string.o vga_driver.o ctype.o keyboard_driver.o stdlib.o math.o	kernel-entry.o interrupt.o stdio.o isr.o idt.o timer.o
-LIBS_OBJ_FILES=$(addprefix $(BUILD_DIR)/, $(LIBS_OBJ_FILE_NAMES))
+KERNEL_BIN=$(KERNEL_BUILD_DIR)/kernel.bin
 
-BUILD_TOOLS=$(SRC_DIR)/buildTools
-LD_FILE=$(BUILD_TOOLS)/linker.ld
+LD_FILE=$(SRC_DIR)/buildTools/linker.ld
 
-$(BOOT_IMG): $(BUILD_DIR)/boot1.bin $(BUILD_DIR)/boot2.bin $(BUILD_DIR)/kernel.bin
+BOOTLOADER_BUILD_DIR=$(BUILD_DIR)/bootloader
+BOOTLOADER_1_BIN=$(BOOTLOADER_BUILD_DIR)/boot1.bin
+BOOTLOADER_2_BIN=$(BOOTLOADER_BUILD_DIR)/boot2.bin
+
+KERNEL_BUILD_DIR=$(BUILD_DIR)/kernel
+
+LIBS_BUILD_DIR=$(BUILD_DIR)/libs
+
+DRIVER_BUILD_DIR=$(BUILD_DIR)/driver
+
+KERNEL_ASM_FILES=src/kernel/src/kernel-entry.asm src/kernel/src/interrupt.asm
+KERNEL_C_FILES=$(wildcard $(KERNEL_DIR)/*.c)
+DRIVER_FILES=$(wildcard $(DRIVERS_DIR)/*.c)
+LIBS_FILES=$(wildcard $(LIBS_DIR)/*.c)
+
+KERNEL_OBJ_ASM_FILES=$(patsubst $(KERNEL_DIR)/%.asm,$(KERNEL_BUILD_DIR)/%.o,$(KERNEL_ASM_FILES))
+KERNEL_OBJ_C_FILES=$(patsubst $(KERNEL_DIR)/%.c,$(KERNEL_BUILD_DIR)/%.o,$(KERNEL_C_FILES))
+DRIVER_OBJ_FILES=$(patsubst $(DRIVERS_DIR)/%.c,$(DRIVER_BUILD_DIR)/%.o,$(DRIVER_FILES))
+LIBS_OBJ_FILES=$(patsubst $(LIBS_DIR)/%.c,$(LIBS_BUILD_DIR)/%.o,$(LIBS_FILES))
+
+# write the boot image together
+$(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
 	# 8MB boot image
 	dd if=/dev/zero of=$(BOOT_IMG) bs=8M count=1
 
 	# write stage 1
-	dd if=$(STAGE1_BOOT) of=$(BOOT_IMG) bs=512 seek=0 conv=notrunc
+	dd if=$(BOOTLOADER_1_BIN) of=$(BOOT_IMG) bs=512 seek=0 conv=notrunc
 
 	# write stage 2
-	dd if=$(STAGE2_BOOT) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc
+	dd if=$(BOOTLOADER_2_BIN) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc
 
 	# write kernel
 	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=3 conv=notrunc count=100
 	
-$(STAGE1_BOOT): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR)
-	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot1.asm -f bin -o $(STAGE1_BOOT)
+$(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot1.asm -f bin -o $(BOOTLOADER_1_BIN)
 	
-$(STAGE2_BOOT): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR)
-	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(STAGE2_BOOT)
+$(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(BOOTLOADER_2_BIN)
 
-$(KERNEL_BIN): $(KERNEL_DIR)/kernel.c $(LIBS_OBJ_FILES) $(KERNEL_DIR)/kernel-entry.asm | $(BUILD_DIR) 
-	$(CC) $(CFLAGS) -c $(KERNEL_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
-	$(LD) -m elf_i386 -T $(LD_FILE) -o $(KERNEL_BIN) $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o $(LIBS_OBJ_FILES) --oformat binary
+$(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
+	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES)
 
-$(BUILD_DIR)/string.o: $(LIBS_SRC_DIR)/string.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/string.c -o $(BUILD_DIR)/string.o
+# build the kernel asm files
+$(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR)
+	$(foreach file, $(KERNEL_ASM_FILES), $(ASM) $(ASM32_FLAGS) $(file) -o $(KERNEL_BUILD_DIR)/$(notdir $(file:.asm=.o));)
 
-$(BUILD_DIR)/vga_driver.o: $(LIBS_SRC_DIR)/vga_driver.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/vga_driver.c -o $(BUILD_DIR)/vga_driver.o
+# build the kernel c files
+$(KERNEL_OBJ_C_FILES): $(KERNEL_BUILD_DIR)
+	$(foreach file, $(KERNEL_C_FILES), $(CC) $(CFLAGS) -c $(file) -o $(KERNEL_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
-$(BUILD_DIR)/ctype.o: $(LIBS_SRC_DIR)/ctype.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/ctype.c -o $(BUILD_DIR)/ctype.o
+# build the driver c files
+$(DRIVER_OBJ_FILES): $(DRIVER_BUILD_DIR)
+	$(foreach file, $(DRIVER_FILES), $(CC) $(CFLAGS) -c $(file) -o $(DRIVER_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
-$(BUILD_DIR)/keyboard_driver.o: $(LIBS_SRC_DIR)/keyboard_driver.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/keyboard_driver.c -o $(BUILD_DIR)/keyboard_driver.o
+# build the libs c files
+$(LIBS_OBJ_FILES): $(LIBS_BUILD_DIR)
+	$(foreach file, $(LIBS_FILES), $(CC) $(CFLAGS) -c $(file) -o $(LIBS_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
-$(BUILD_DIR)/interrupt.o: $(KERNEL_DIR)/interrupt.asm | $(BUILD_DIR)
-	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/interrupt.asm -o $(BUILD_DIR)/interrupt.o
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/stdlib.o: $(LIBS_SRC_DIR)/stdlib.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/stdlib.c -o $(BUILD_DIR)/stdlib.o
+$(BOOTLOADER_BUILD_DIR): $(BUILD_DIR)
+	mkdir -p $(BOOTLOADER_BUILD_DIR)
 
-$(BUILD_DIR)/math.o: $(LIBS_SRC_DIR)/math.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/math.c -o $(BUILD_DIR)/math.o
+$(KERNEL_BUILD_DIR): $(BUILD_DIR)
+	mkdir -p $(KERNEL_BUILD_DIR)
 
-$(BUILD_DIR)/kernel-entry.o: $(KERNEL_DIR)/kernel-entry.asm | $(BUILD_DIR)
-	nasm $(ASM32_FLAGS) $(KERNEL_DIR)/kernel-entry.asm -o $(BUILD_DIR)/kernel-entry.o
+$(LIBS_BUILD_DIR): $(BUILD_DIR)
+	mkdir -p $(LIBS_BUILD_DIR)
 
-$(BUILD_DIR)/stdio.o: $(LIBS_SRC_DIR)/stdio.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/stdio.c -o $(BUILD_DIR)/stdio.o
-
-$(BUILD_DIR)/isr.o: $(LIBS_SRC_DIR)/isr.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/isr.c -o $(BUILD_DIR)/isr.o
-
-$(BUILD_DIR)/idt.o: $(LIBS_SRC_DIR)/idt.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/idt.c -o $(BUILD_DIR)/idt.o
-
-$(BUILD_DIR)/timer.o: $(LIBS_SRC_DIR)/timer.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(LIBS_SRC_DIR)/timer.c -o $(BUILD_DIR)/timer.o
+$(DRIVER_BUILD_DIR): $(BUILD_DIR)
+	mkdir -p $(DRIVER_BUILD_DIR)
 
 run:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw
@@ -91,4 +101,4 @@ debug:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw -s -S
 
 clean:
-	rm $(BUILD_DIR)/*
+	rm -r $(BUILD_DIR)/*
