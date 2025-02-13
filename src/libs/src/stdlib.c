@@ -94,3 +94,35 @@ void mem_free(void *ptr) {
     curr_node = merge_node_forward(curr_node);
     merge_node_previous(curr_node);
 }
+
+void reverse(char *s) {
+    char c;
+    int len = strlen(s);
+    for (int i = 0; i < len / 2; i++) {
+        c = s[i];
+        s[i] = s[len - i - 1];
+        s[len - i - 1] = c;
+    }
+}
+
+void itoa(int n, char *str, int base) {
+    char buf[128];
+
+    int i = 0;
+    bool is_negative = n < 0;
+    n = is_negative ? -n : n;
+
+    while (n) {
+        int rem = n % base;
+        buf[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        n = n / base;
+    }
+
+    if (is_negative) {
+        buf[i++] = '-';
+    }
+
+    buf[i] = '\0';
+
+    reverse(buf);
+}

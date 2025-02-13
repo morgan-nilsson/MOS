@@ -1,8 +1,12 @@
 #include "../../driver/include/keyboard_driver.h"
 #include "../../driver/include/vga_driver.h"
 #include "../../driver/include/timer_driver.h"
+#include "../../driver/include/vbe_driver.h"
+#include "../include/system.h"
 
 void _start(void) {
+    init_paging();
+
     clear_screen();
     write_string("Installing isrs\n");
     isr_install();
@@ -16,6 +20,8 @@ void _start(void) {
 
     write_string("Installing timer\n");
     init_timer(50);
+
+    write_string("End");
 
     while (1);
 }

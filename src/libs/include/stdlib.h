@@ -23,4 +23,7 @@ typedef struct mem_block {
 void *mem_alloc(uint32_t size);
 void mem_free(void *ptr);
 
+void itoa(int n, char *str, int base);
+void reverse(char *s);
+
 #endif

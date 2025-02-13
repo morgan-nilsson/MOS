@@ -46,7 +46,7 @@ loader:
     mov es, ax
 
     mov ah, 0x02	        ; BIOS function read sector
-    mov al, 0x01	        ; reading size 1 sector
+    mov al, 0x02	        ; reading size 2 sector
     mov ch, 0x00            ; 
     mov cl, 0x02		    ; sector = 2
     mov dh, 0x00		    ; head = 0

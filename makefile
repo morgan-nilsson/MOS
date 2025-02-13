@@ -30,7 +30,8 @@ LIBS_BUILD_DIR=$(BUILD_DIR)/libs
 
 DRIVER_BUILD_DIR=$(BUILD_DIR)/driver
 
-KERNEL_ASM_FILES=src/kernel/src/kernel-entry.asm src/kernel/src/interrupt.asm
+# kernel-entry must be first in the list or the kernel will not have the correct entry point
+KERNEL_ASM_FILES=$(KERNEL_DIR)/kernel-entry.asm $(KERNEL_DIR)/interrupt.asm
 KERNEL_C_FILES=$(wildcard $(KERNEL_DIR)/*.c)
 DRIVER_FILES=$(wildcard $(DRIVERS_DIR)/*.c)
 LIBS_FILES=$(wildcard $(LIBS_DIR)/*.c)
@@ -49,7 +50,7 @@ $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
 	dd if=$(BOOTLOADER_1_BIN) of=$(BOOT_IMG) bs=512 seek=0 conv=notrunc
 
 	# write stage 2
-	dd if=$(BOOTLOADER_2_BIN) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc
+	dd if=$(BOOTLOADER_2_BIN) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc count=2
 
 	# write kernel
 	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=3 conv=notrunc count=100
@@ -64,19 +65,19 @@ $(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES)
 	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES)
 
 # build the kernel asm files
-$(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR)
+$(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_ASM_FILES)
 	$(foreach file, $(KERNEL_ASM_FILES), $(ASM) $(ASM32_FLAGS) $(file) -o $(KERNEL_BUILD_DIR)/$(notdir $(file:.asm=.o));)
 
 # build the kernel c files
-$(KERNEL_OBJ_C_FILES): $(KERNEL_BUILD_DIR)
+$(KERNEL_OBJ_C_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_C_FILES)
 	$(foreach file, $(KERNEL_C_FILES), $(CC) $(CFLAGS) -c $(file) -o $(KERNEL_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
 # build the driver c files
-$(DRIVER_OBJ_FILES): $(DRIVER_BUILD_DIR)
+$(DRIVER_OBJ_FILES): $(DRIVER_BUILD_DIR) $(DRIVER_FILES)
 	$(foreach file, $(DRIVER_FILES), $(CC) $(CFLAGS) -c $(file) -o $(DRIVER_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
 # build the libs c files
-$(LIBS_OBJ_FILES): $(LIBS_BUILD_DIR)
+$(LIBS_OBJ_FILES): $(LIBS_BUILD_DIR) $(LIBS_FILES)
 	$(foreach file, $(LIBS_FILES), $(CC) $(CFLAGS) -c $(file) -o $(LIBS_BUILD_DIR)/$(notdir $(file:.c=.o));)
 
 $(BUILD_DIR):
