@@ -101,5 +101,9 @@ run:
 debug:
 	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw -s -S
 
+check:
+	cppcheck --enable=all --inconclusive --std=c99 --language=c --platform=unix32 --suppress=missingIncludeSystem $(SRC_DIR)
+	cpplint --recursive $(SRC_DIR)
+
 clean:
 	rm -r $(BUILD_DIR)/*

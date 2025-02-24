@@ -2,13 +2,12 @@
 
 idt_gate_t idt[256];
 idt_register_t idt_reg;
-void set_idt_gate(int n, uint32_t handler) {
+void set_idt_gate(int n, uint32_t handler, uint16_t sel, uint8_t flags) {
     idt[n].low_offset = low_16(handler);
-    idt[n].selector = 0x08;
+    idt[n].selector = sel;
     idt[n].zero = 0;
 
-    // 1 00 0 1 110 = 0x8E
-    idt[n].flags = 0x8E;
+    idt[n].flags = flags;
     idt[n].high_offset = high_16(handler);
 }
 

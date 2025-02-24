@@ -21,7 +21,7 @@ typedef struct {
     uint32_t base;
 } __attribute__((packed)) idt_register_t;
 
-void set_idt_gate(int n, uint32_t handler);
+void set_idt_gate(int n, uint32_t handler, uint16_t sel, uint8_t flags);
 void load_idt(void);
 
 #endif

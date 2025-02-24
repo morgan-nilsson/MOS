@@ -125,4 +125,6 @@ void itoa(int n, char *str, int base) {
     buf[i] = '\0';
 
     reverse(buf);
+
+    strcpy(str, buf);
 }
