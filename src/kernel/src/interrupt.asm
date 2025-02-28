@@ -3,6 +3,8 @@
 [extern isr_handler]
 [extern irq_handler]
 
+[extern syscall_table]
+
 irs_common_stub:
 
     pusha           ; push gen regs
@@ -382,3 +384,35 @@ irq15:
     push byte 15
     push byte 47
     jmp irq_common_stub
+
+global syscall_handler
+syscall_handler:
+    ; eax: syscall number
+    ; ebx: arg1
+    ; ecx: arg2
+    ; edx: arg3
+    ; esi: arg4
+    ; edi: arg5
+
+    pusha       ; Save all registers
+
+    ; push syscall the parameters
+    push edi
+    push esi
+    push edx
+    push ecx
+    push ebx
+
+    call [syscall_table + eax * 4]  ; Call the correct syscall
+
+    mov [esp + 20], eax       ; Save the return value
+
+    add esp, 20               ; Remove the parameters from the stack
+
+    popa                      ; Restore registers
+    iret                      ; Return from interrupt
+
+invalid_syscall:
+    mov eax, -1               ; Return error
+    popa
+    iret

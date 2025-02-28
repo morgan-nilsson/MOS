@@ -6,6 +6,7 @@
 #include "../../driver/include/vbe_driver.h"
 #include "../../libs/include/math.h"
 #include "../include/system.h"
+#include "../../libs/include/stdlib.h"
 
 void _start(void) {
     init_paging();
@@ -25,6 +26,15 @@ void _start(void) {
 
     write_string("Installing timer\n");
     init_timer(50);
+
+    init_syscalls();
+
+    char *str = "Hello, World!\0";
+
+    //int err = syscall(1, 1, (uint32_t)str, 13, 0, 0);
+    int err = 0;
+
+    syscall(1, 1, (uint32_t)str, 13, 0, 0);
 
     write_string("End");
 
