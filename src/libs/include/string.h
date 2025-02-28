@@ -1,5 +1,7 @@
-#ifndef STRING_H
-#define STRING_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_STRING_H_
+#define SRC_LIBS_INCLUDE_STRING_H_
 
 #ifndef NULL
 #define NULL ((void *)0)

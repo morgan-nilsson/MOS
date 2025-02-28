@@ -1,10 +1,12 @@
-#ifndef _MATH_H
-#define _MATH_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_MATH_H_
+#define SRC_LIBS_INCLUDE_MATH_H_
 
 #define PI 3.14159265358979323846
 #define E 2.71828182845904523536
 
-int abs(int n);
+extern int abs(int n);
 long int labs(long int n);
 long long int llabs(long long int n);
 

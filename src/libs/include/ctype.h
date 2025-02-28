@@ -1,5 +1,7 @@
-#ifndef _CTYPE_H
-#define _CTYPE_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_CTYPE_H_
+#define SRC_LIBS_INCLUDE_CTYPE_H_
 
 int isalpah(int c);
 int isdigit(int c);

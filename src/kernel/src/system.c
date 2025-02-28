@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/system.h"
 
 #define PAGE_PRESENT 0x1

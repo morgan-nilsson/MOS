@@ -1,5 +1,7 @@
-#ifndef _STDLIB_H
-#define _STDLIB_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_STDLIB_H_
+#define SRC_LIBS_INCLUDE_STDLIB_H_
 
 #define MEM_BLOCK_SIZE 4096
 #define MEM_BLOCK_NODE_SIZE sizeof(mem_block_t)

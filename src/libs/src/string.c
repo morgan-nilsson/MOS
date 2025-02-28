@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/string.h"
 
 unsigned int strlen(const char *s) {

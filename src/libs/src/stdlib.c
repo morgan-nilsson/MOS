@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/stdlib.h"
 
 char* mem[MEM_BLOCK_SIZE];

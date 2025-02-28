@@ -1,3 +1,4 @@
+; Copyright 2025 Morgan Nilsson
 org 0x1000
 bits 16
 jmp main

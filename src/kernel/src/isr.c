@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/isr.h"
 #include "../../libs/include/stdio.h"
 #include "../../kernel/include/idt.h"

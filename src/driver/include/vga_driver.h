@@ -1,5 +1,6 @@
-#ifndef VGA_DRIVER_H
-#define VGA_DRIVER_H
+// Copyright 2025 Morgan Nilsson
+#ifndef SRC_DRIVER_INCLUDE_VGA_DRIVER_H_
+#define SRC_DRIVER_INCLUDE_VGA_DRIVER_H_
 
 #include "../../libs/include/stdtypes.h"
 

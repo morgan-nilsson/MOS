@@ -1,11 +1,16 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../../driver/include/keyboard_driver.h"
 #include "../../driver/include/vga_driver.h"
 #include "../../driver/include/timer_driver.h"
 #include "../../driver/include/vbe_driver.h"
+#include "../../libs/include/math.h"
 #include "../include/system.h"
 
 void _start(void) {
     init_paging();
+
+    int i = abs(-5);
 
     clear_screen();
     write_string("Installing isrs\n");

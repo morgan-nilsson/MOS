@@ -1,5 +1,6 @@
-#ifndef VBE_DRIVER_H
-#define VBE_DRIVER_H
+// Copyright 2025 Morgan Nilsson
+#ifndef SRC_DRIVER_INCLUDE_VBE_DRIVER_H_
+#define SRC_DRIVER_INCLUDE_VBE_DRIVER_H_
 
 #include "../../libs/include/stdtypes.h"
 

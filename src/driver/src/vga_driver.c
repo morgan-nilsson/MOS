@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/vga_driver.h"
 #include "../../libs/include/stdio.h"
 #include "../../libs/include/string.h"

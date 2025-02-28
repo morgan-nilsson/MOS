@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/idt.h"
 
 idt_gate_t idt[256];
@@ -14,5 +16,5 @@ void set_idt_gate(int n, uint32_t handler, uint16_t sel, uint8_t flags) {
 void load_idt(void) {
     idt_reg.base = (uint32_t) &idt;
     idt_reg.limit = IDT_ENTRIES * sizeof(idt_gate_t) - 1;
-    asm volatile("lidt (%0)" : : "r" (&idt_reg));
+    asm volatile("lidtw (%0)" : : "r" (&idt_reg));
 }

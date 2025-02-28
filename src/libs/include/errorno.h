@@ -1,5 +1,7 @@
-#ifndef _SRC_LIBS_INCLUDE_ERRORNO_H_
-#define _SRC_LIBS_INCLUDE_ERRORNO_H_
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_ERRORNO_H_
+#define SRC_LIBS_INCLUDE_ERRORNO_H_
 
 int errorno = 0;
 

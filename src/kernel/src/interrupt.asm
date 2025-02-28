@@ -1,3 +1,5 @@
+; Copyright 2025 Morgan Nilsson
+
 [extern isr_handler]
 [extern irq_handler]
 

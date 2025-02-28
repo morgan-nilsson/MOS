@@ -1,5 +1,7 @@
-#ifndef IDT_H
-#define IDT_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_KERNEL_INCLUDE_IDT_H_
+#define SRC_KERNEL_INCLUDE_IDT_H_
 
 #include "../../libs/include/stdtypes.h"
 #define IDT_ENTRIES 256

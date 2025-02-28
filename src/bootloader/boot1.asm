@@ -1,3 +1,4 @@
+; Copyright 2025 Morgan Nilsson
 org 0x7c00
 bits 16
 jmp loader

@@ -1,5 +1,7 @@
-#ifndef ISR_H
-#define ISR_H
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_KERNEL_INCLUDE_ISR_H_
+#define SRC_KERNEL_INCLUDE_ISR_H_
 
 #include "../../libs/include/stdtypes.h"
 

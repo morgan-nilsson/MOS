@@ -1,3 +1,5 @@
+// Copyright 2025 Morgan Nilsson
+
 #include "../include/ctype.h"
 
 int isalpah(int c) {

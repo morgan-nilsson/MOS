@@ -1,8 +1,6 @@
-#include "../include/math.h"
+// Copyright 2025 Morgan Nilsson
 
-int abs(int n) {
-    return n < 0 ? -n : n;
-}
+#include "../include/math.h"
 
 long int labs(long int n) {
     return n < 0 ? -n : n;
