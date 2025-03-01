@@ -29,14 +29,12 @@ void _start(void) {
 
     init_syscalls();
 
-    char *str = "Hello, World!\0";
+    write_string("Enter character: ");
+    VirtualKey vkey = get_Vkey();
+    char c = Virtual_key_to_char(vkey);
+    write_char(c);
 
-    //int err = syscall(1, 1, (uint32_t)str, 13, 0, 0);
-    int err = 0;
-
-    syscall(1, 1, (uint32_t)str, 13, 0, 0);
-
-    write_string("End");
+    write_string("\nEnd\n");
 
     while (1);
 }

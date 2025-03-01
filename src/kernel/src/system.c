@@ -22,16 +22,12 @@ syscall_t syscall_table[NUM_SYSCALLS] = {
 // paging code first 3gb user last 1gb kernel
 
 // page table entry
-uint32_t page_directory[1024] __attribute__((aligned(4096)));
+static uint32_t page_directory[1024] __attribute__((aligned(4096)));
 
 // page table
-uint32_t page_table[1024][1024] __attribute__((aligned(4096)));
+static uint32_t page_table[1024][1024] __attribute__((aligned(4096)));
 
 void init_paging() {
-    // clear the page directory
-    for (int i = 0; i < 1024; i++) {
-        page_directory[i] = 0x00000002;
-    }
 
     for (int i = 0; i < 1024; i++) {
         for (int j = 0; j < 1024; j++) {
