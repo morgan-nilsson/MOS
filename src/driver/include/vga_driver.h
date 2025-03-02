@@ -22,5 +22,8 @@ void write_string(const char* s);
 void clear_screen();
 void write_newline();
 void print_letter(uint8_t scancode);
+void write_hex(uint32_t n);
+void write_hex_16(uint16_t n);
+void write_hex_8(uint8_t n);
 
 #endif

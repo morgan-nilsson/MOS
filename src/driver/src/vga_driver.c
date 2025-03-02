@@ -34,6 +34,42 @@ void write_char(char c) {
     return;
 }
 
+void write_hex(uint32_t n) {
+    char hex[9];
+    for (int i = 0; i < 8; i++) {
+        uint8_t nibble = (n >> (4 * (7 - i))) & 0xF;
+        hex[i] = nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
+    }
+    hex[8] = '\0';
+
+    write_string("0x");
+    write_string(hex);
+}
+
+void write_hex_16(uint16_t n) {
+    char hex[5];
+    for (int i = 0; i < 4; i++) {
+        uint8_t nibble = (n >> (4 * (3 - i))) & 0xF;
+        hex[i] = nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
+    }
+    hex[4] = '\0';
+
+    write_string("0x");
+    write_string(hex);
+}
+
+void write_hex_8(uint8_t n) {
+    char hex[3];
+    for (int i = 0; i < 2; i++) {
+        uint8_t nibble = (n >> (4 * (1 - i))) & 0xF;
+        hex[i] = nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
+    }
+    hex[2] = '\0';
+
+    write_string("0x");
+    write_string(hex);
+}
+
 int get_row_from_offset(int offset) {
     return offset / (2 * VGA_MAX_COLUMNS);
 }
