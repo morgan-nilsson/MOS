@@ -42,6 +42,32 @@ VirtualKey get_Vkey(void) {
     }
 }
 
+/**
+ * Blocking function that returns only characters from the keyboard.
+ * Will ignore key-up events.
+ */
+char get_char(void) {
+    uint8_t scancode = 0;
+
+    while (1) {
+        // Wait for a key event
+        while (!(port_byte_in(0x64) & 1));
+
+        scancode = port_byte_in(0x60);
+
+        // Ignore Key Up events (0x80 offset)
+        if (scancode & 0x80) {
+            continue;
+        }
+
+        // Convert the scancode to a character
+        char c = Virtual_key_to_char(translate_PS2_scancode_to_Vkey(scancode));
+
+        if (c) return c; // Only return valid characters
+    }
+}
+
+
 
 VirtualKey translate_PS2_scancode_to_Vkey(uint8_t scancode) {
     switch(scancode) {

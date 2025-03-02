@@ -12,5 +12,6 @@ void init_keyboard(void);
 
 VirtualKey translate_PS2_scancode_to_Vkey(uint8_t scancode);
 VirtualKey get_Vkey(void);
+char get_char(void);
 
 #endif

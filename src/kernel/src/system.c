@@ -6,6 +6,8 @@
 #include "../../libs/include/string.h"
 #include "../../driver/include/vga_driver.h"
 #include "../../libs/include/stdlib.h"
+#include "../../driver/include/keyboard_driver.h"
+#include "../../driver/include/keyboard.h"
 
 extern void syscall_handler();
 
@@ -15,7 +17,7 @@ extern void syscall_handler();
 
 
 syscall_t syscall_table[NUM_SYSCALLS] = {
-    NULL,
+    (syscall_t) sys_read,
     (syscall_t) sys_write,
 };
 
@@ -51,6 +53,37 @@ void init_paging() {
     asm volatile("mov %%cr0, %0" : "=r" (cr0));
     cr0 |= 0x80000000;
     asm volatile("mov %0, %%cr0" : : "r" (cr0));
+}
+
+int sys_read(int fd, char *buf, int count, char unused, char unused2) {
+    if (buf == NULL || count <= 0) {
+        return -1;
+    }
+
+    switch (fd) {
+        case 0: {
+            int i = 0;
+            while (i < count - 1) {
+                buf[i] = get_char();
+
+                if (buf[i] == '\n') {
+                    i++;
+                    break;
+                }
+
+                i++;
+            }
+            buf[i] = '\0';
+            return i;
+        }
+
+        case 1:
+        case 2:
+            return -1;
+
+        default:
+            return -1;
+    }
 }
 
 int sys_write(int fd, const char *buf, int count, char unused, char unused2) {

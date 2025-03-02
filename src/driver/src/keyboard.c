@@ -43,6 +43,11 @@ char Virtual_key_to_char(VirtualKey vkey) {
         case VK_Y: return 'Y';
         case VK_Z: return 'Z';
 
+        case VK_SPACE: return ' ';
+        case VK_RETURN: return '\n';
+        case VK_BACK: return '\b';
+        case VK_TAB: return '\t';
+
         case VK_OEM_1: return ';';
         case VK_OEM_PLUS: return '=';
         case VK_OEM_COMMA: return ',';
@@ -56,5 +61,6 @@ char Virtual_key_to_char(VirtualKey vkey) {
         case VK_OEM_7: return '\'';
         case VK_OEM_8: return '`';
         case VK_OEM_102: return '\\';
+
     }
 }

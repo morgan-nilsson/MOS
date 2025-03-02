@@ -29,10 +29,11 @@ void _start(void) {
 
     init_syscalls();
 
-    write_string("Enter character: ");
-    VirtualKey vkey = get_Vkey();
-    char c = Virtual_key_to_char(vkey);
-    write_char(c);
+    write_string("gime me a line: ");
+    char buf[128];
+    int count = sys_read(0, buf, 128, 0, 0);
+    buf[count] = '\0';
+    write_string(buf);
 
     write_string("\nEnd\n");
 
