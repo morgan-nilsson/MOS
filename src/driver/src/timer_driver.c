@@ -4,7 +4,7 @@
 #include "../../libs/include/stdio.h"
 #include "../../driver/include/vga_driver.h"
 
-uint32_t tick = 0;
+volatile uint32_t tick = 0;
 
 #define UNUSED(x) (void)(x)
 
@@ -26,4 +26,8 @@ void init_timer(uint32_t frequency) {
 
     port_byte_out(0x40, l);
     port_byte_out(0x40, h);
+}
+
+uint32_t get_tick_count() {
+    return tick;
 }
