@@ -3,13 +3,15 @@
 #include "../include/timer_driver.h"
 #include "../../libs/include/stdio.h"
 #include "../../driver/include/vga_driver.h"
+#include "../../libs/include/stdlib.h"
 
 volatile uint32_t tick = 0;
 
 #define UNUSED(x) (void)(x)
 
 static void timer_callback(registers_t *regs) {
-    tick++;
+
+    ++tick;
     UNUSED(regs);
 }
 

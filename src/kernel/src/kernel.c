@@ -27,17 +27,9 @@ void _start(void) {
 
     init_syscalls();
 
-    char buf[128] = "Hello";
-    char buf2[128];
-    int count = syscall(1, 1, (uint32_t)buf, 128, 0, 0);
-    if (count == 0) {
-        write_string("Zero size\n");
-    } else {
-        itoa(count, buf2, 10);
-        write_string("Count: ");
-        write_string(buf2);
-    }
-    buf[count] = '\0';
+    write_string("Starting timer\n");
+    //sys_sleep(1000, 0, 0, 0, 0);
+    syscall(2, 1000, 0, 0, 0, 0);
 
     write_string("\nEnd\n");
 

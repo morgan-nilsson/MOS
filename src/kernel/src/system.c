@@ -8,6 +8,7 @@
 #include "../../libs/include/stdlib.h"
 #include "../../driver/include/keyboard_driver.h"
 #include "../../driver/include/keyboard.h"
+#include "../../driver/include/timer_driver.h"
 
 extern void syscall_handler();
 
@@ -19,6 +20,7 @@ extern void syscall_handler();
 syscall_t syscall_table[NUM_SYSCALLS] = {
     (syscall_t) sys_read,
     (syscall_t) sys_write,
+    (syscall_t) sys_sleep
 };
 
 // paging code first 3gb user last 1gb kernel
@@ -104,6 +106,20 @@ int sys_write(int fd, const char *buf, int count, char unused, char unused2) {
     default:
         return -1;
     }
+}
+
+int sys_sleep(int ms, char unused, char unused2, char unused3, char unused4) {
+    asm ("sti");
+    char buf[256];
+    uint32_t end = get_tick_count() + ms;
+    while (1) {
+        uint32_t now = get_tick_count();
+        if (now >= end) {
+            break;
+        }
+
+    }
+    return 0;
 }
 
 void init_syscalls() {
