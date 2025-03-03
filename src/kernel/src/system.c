@@ -93,6 +93,9 @@ int sys_write(int fd, const char *buf, int count, char unused, char unused2) {
     case 2:
 
         for (int i = 0; i < count; i++) {
+            if (buf[i] == '\0') {
+                return i;
+            }
             write_char(buf[i]);
         }
 

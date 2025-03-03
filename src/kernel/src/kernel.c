@@ -11,8 +11,6 @@
 void _start(void) {
     init_paging();
 
-    int i = abs(-5);
-
     clear_screen();
     write_string("Installing isrs\n");
     isr_install();
@@ -25,15 +23,21 @@ void _start(void) {
     write_string("Keyboard driver installed\n");
 
     write_string("Installing timer\n");
-    init_timer(50);
+    init_timer(1000);
 
     init_syscalls();
 
-    write_string("gime me a line: ");
-    char buf[128];
-    int count = sys_read(0, buf, 128, 0, 0);
+    char buf[128] = "Hello";
+    char buf2[128];
+    int count = syscall(1, 1, (uint32_t)buf, 128, 0, 0);
+    if (count == 0) {
+        write_string("Zero size\n");
+    } else {
+        itoa(count, buf2, 10);
+        write_string("Count: ");
+        write_string(buf2);
+    }
     buf[count] = '\0';
-    write_string(buf);
 
     write_string("\nEnd\n");
 

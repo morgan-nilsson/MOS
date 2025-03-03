@@ -405,9 +405,9 @@ syscall_handler:
 
     call [syscall_table + eax * 4]  ; Call the correct syscall
 
-    mov [esp + 20], eax       ; Save the return value
-
     add esp, 20               ; Remove the parameters from the stack
+
+    mov [esp + 28], eax       ; Save the return value
 
     popa                      ; Restore registers
     iret                      ; Return from interrupt
