@@ -8,6 +8,10 @@ CFLAGS=-ffreestanding -nostdlib -m32 -g
 LD = i686-elf-ld
 LD_FLAGS = -m elf_i386 -T $(LD_FILE) --oformat binary
 
+ZIG_FLAGS= -target x86-freestanding
+
+QEMU_FLAGS=-cpu qemu32 -m 4G
+
 BUILD_DIR=build
 SRC_DIR=src
 BOOTLOADER_DIR=$(SRC_DIR)/bootloader
@@ -67,7 +71,7 @@ $(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES)
 	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(ZIG_OBJ_FILE)
 
 $(ZIG_OBJ_FILE): $(ZIG_FILES) | $(BUILD_DIR)
-	zig build-obj $(ZIG_FILES) -target x86-freestanding -femit-bin=$(ZIG_OBJ_FILE)
+	zig build-obj $(ZIG_FILES) $(ZIG_FLAGS) -femit-bin=$(ZIG_OBJ_FILE)
 
 # build the kernel asm files
 $(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_ASM_FILES)
@@ -101,10 +105,10 @@ $(DRIVER_BUILD_DIR): $(BUILD_DIR)
 	mkdir -p $(DRIVER_BUILD_DIR)
 
 run:
-	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw
+	qemu-system-i386 $(QEMU_FLAGS) -drive file=$(BOOT_IMG),format=raw
 
 debug:
-	qemu-system-i386 -cpu qemu32 -drive file=$(BOOT_IMG),format=raw -s -S
+	qemu-system-i386 $(QEMU_FLAGS) -drive file=$(BOOT_IMG),format=raw -s -S
 
 check:
 	cppcheck --enable=all --inconclusive --std=c99 --language=c --platform=unix32 --suppress=missingIncludeSystem $(SRC_DIR)

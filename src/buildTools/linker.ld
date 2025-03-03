@@ -1,7 +1,7 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x2000;
+    . = 0x8000;
     
     .text : {
         *(.text)      /* Code section */

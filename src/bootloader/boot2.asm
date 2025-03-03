@@ -35,7 +35,7 @@ main:
     mov al, 0x3
     int 0x10
 
-; load kernel into memery at 0x2000
+; load kernel into memery at 0x8000
 loadKernel: 
     xor ax, ax
     mov es, ax
@@ -46,7 +46,7 @@ loadKernel:
     mov cl, 0x04        ; sector = 4
     mov dh, 0x00        ; head = 0
 
-    mov bx, 0x2000
+    mov bx, 0x8000
     int 0x13
 
     jc kernel_load_error
@@ -162,7 +162,7 @@ start_protected_mode:
 
     mov ax, 0x10
     mov ss, ax
-    mov sp, 0x7c00
+    mov sp, 0x9FC00
 
     jmp enterKernel
     mov edx, enteredProtectedMode
@@ -183,6 +183,6 @@ protectedModeMsg:
 enterKernel:
 
     cli
-    call 0x2000
+    call 0x8000
 
     hlt
