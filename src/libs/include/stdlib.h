@@ -3,7 +3,8 @@
 #ifndef SRC_LIBS_INCLUDE_STDLIB_H_
 #define SRC_LIBS_INCLUDE_STDLIB_H_
 
-#define MEM_BLOCK_SIZE 4096
+#define HEAP_SIZE_BYTES 4096
+#define HEAP_START 0x200000
 #define MEM_BLOCK_NODE_SIZE sizeof(mem_block_t)
 
 #include "../../libs/include/stdtypes.h"

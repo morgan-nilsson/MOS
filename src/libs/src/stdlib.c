@@ -2,19 +2,19 @@
 
 #include "../include/stdlib.h"
 
-char* mem[MEM_BLOCK_SIZE];
+char* mem = (char *)HEAP_START;
 static mem_block_t *mem_start;
 
 void init_mem_alloc() {
     mem_start = (mem_block_t *)mem;
-    mem_start->size = MEM_BLOCK_SIZE - MEM_BLOCK_NODE_SIZE;
+    mem_start->size = HEAP_SIZE_BYTES - MEM_BLOCK_NODE_SIZE;
     mem_start->next = NULL;
     mem_start->prev = NULL;
 }
 
 void *find_best_mem_block(mem_block_t *memLL, uint32_t size) {
     mem_block_t *best_mem_block = NULL;
-    uint32_t best_mem_block_size = MEM_BLOCK_SIZE + 1;
+    uint32_t best_mem_block_size = HEAP_SIZE_BYTES + 1;
 
     mem_block_t *curr_block = mem_start;
     while (curr_block) {
