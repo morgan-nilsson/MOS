@@ -309,7 +309,7 @@ void dump_from_stack(registers_t *regs, size_t size) {
 
         }
 
-        write_hex(*(uint32_t*)(regs->esp + i));
+        write_hex(*(uint32_t*)(regs->esp + i * 4));
 
         if (i % 4 == 3) {
 
@@ -345,7 +345,7 @@ void dump_from_memory_address(uint32_t address, size_t size) {
 
         }
 
-        write_hex(*(uint32_t*)(address + i));
+        write_hex(*(uint32_t*)(address + i * 4));
 
         if (i % 4 == 3) {
 
