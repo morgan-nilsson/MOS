@@ -2,6 +2,8 @@
 
 /**
  * Translates a virtual key to a character.
+ * @param vkey The virtual key to translate
+ * @return The character that the virtual key represents
  */
 char Virtual_key_to_char(VirtualKey vkey) {
     switch (vkey) {

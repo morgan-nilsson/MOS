@@ -1,6 +1,9 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
+/**
+ * @brief Virtual key codes
+ */
 typedef enum {
     VK_LBUTTON = 0x01,  // Left mouse button
     VK_RBUTTON = 0x02,  // Right mouse button
@@ -156,6 +159,12 @@ typedef enum {
 
 } VirtualKey;
 
+/**
+ * @brief Converts a virtual key to a character
+ * 
+ * @param vkey The virtual key to convert
+ * @return The character corresponding to the virtual key
+ */
 char Virtual_key_to_char(VirtualKey vkey);
 
 #endif
