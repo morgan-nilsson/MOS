@@ -105,6 +105,14 @@ void dump_registers(registers_t *regs);
  * @param regs Pointer to the structure containing the register values.
  * @param size The number of bytes to dump from the stack.
  */
-void dump_from_stack(registers_t *regs, uint32_t size);
+void dump_from_stack(registers_t *regs, size_t size);
+
+/**
+ * @brief Dump the memory from the given address
+ * 
+ * @param address The address to dump from
+ * @param size The size of the memory to dump
+ */
+void dump_from_memory_address(uint32_t address, size_t size);
 
 #endif

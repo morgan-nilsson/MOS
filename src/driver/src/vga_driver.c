@@ -296,28 +296,70 @@ void dump_registers(registers_t *regs) {
  * @param regs The registers to dump the stack from
  * @param size The size of the stack to dump
  */
-void dump_from_stack(registers_t *regs, uint32_t size) {
+void dump_from_stack(registers_t *regs, size_t size) {
 
     write_string("Address    | Values\n");
 
-    for (uint32_t i = 0; i < size; i += 4) {
+    for (uint32_t i = 0; i < size; ++i) {
 
-        write_hex(regs->esp + i);
-        write_string(" | ");
+        if (i % 4 == 0) {
+
+            write_hex(regs->esp + i);
+            write_string(" | ");
+
+        }
 
         write_hex(*(uint32_t*)(regs->esp + i));
-        write_string(" ");
-        write_hex(*(uint32_t*)(regs->esp + i + 4));
-        write_string(" ");
-        write_hex(*(uint32_t*)(regs->esp + i + 8));
-        write_string(" ");
-        write_hex(*(uint32_t*)(regs->esp + i + 12));
-        write_string("\n");
+
+        if (i % 4 == 3) {
+
+            write_string("\n");
+
+        } else {
+
+            write_string(" ");
+
+        }
 
     }
 
 }
 
+/**
+ * Dump the memory from the given address
+ * @param address The address to dump from
+ * @param size The size of the memory to dump
+ */
+void dump_from_memory_address(uint32_t address, size_t size) {
+
+    write_string("Address    | Values\n");
+
+    uint32_t byte_max_offset = size * 4;
+
+    for (uint32_t i = 0; i < size; ++i) {
+
+        if (i % 4 == 0) {
+
+            write_hex(address + i);
+            write_string(" | ");
+
+        }
+
+        write_hex(*(uint32_t*)(address + i));
+
+        if (i % 4 == 3) {
+
+            write_string("\n");
+
+        } else {
+
+            write_string(" ");
+
+        }
+
+    }
+
+}
 
 /**
  * Print a letter to the screen
