@@ -92,6 +92,14 @@ void write_hex_16(uint16_t n);
  */
 void write_hex_8(uint8_t n);
 
+
+/**
+ * @brief Write an 32 bit integer to the screen
+ *
+ * @param n the 32 bit integer
+ */
+void write_int(int32_t n);
+
 /**
  * @brief Dumps the contents of the CPU registers to the screen.
  * 

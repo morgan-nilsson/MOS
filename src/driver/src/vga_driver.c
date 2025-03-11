@@ -3,6 +3,7 @@
 #include "../include/vga_driver.h"
 #include "../../libs/include/stdio.h"
 #include "../../libs/include/string.h"
+#include "../../libs/include/stdlib.h"
 
 /**
  * Set the cursor on the screen to the given offset
@@ -178,6 +179,17 @@ void write_hex_8(uint8_t n) {
     write_string("0x");
     write_string(hex);
 
+}
+
+void write_int(int32_t n) {
+
+    char number[33];
+
+    itoa(n, number, 10);
+
+    number[32] = '\0';
+
+    write_string(number);
 }
 
 /**
