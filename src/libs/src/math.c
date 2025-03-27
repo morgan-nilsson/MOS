@@ -2,38 +2,6 @@
 
 #include "../include/math.h"
 
-long int labs(long int n) {
-    return n < 0 ? -n : n;
-}
-
-long long int llabs(long long int n) {
-    return n < 0 ? -n : n;
-}
-
-int max(int a, int b) {
-    return a > b ? a : b;
-}
-
-int min(int a, int b) {
-    return a < b ? a : b;
-}
-
-long int lmax(long int a, long int b) {
-    return a > b ? a : b;
-}
-
-long int lmin(long int a, long int b) {
-    return a < b ? a : b;
-}
-
-long long int llmax(long long int a, long long int b) {
-    return a > b ? a : b;
-}
-
-long long int llmin(long long int a, long long int b) {
-    return a < b ? a : b;
-}
-
 int pow(int base, int exp) {
     int result = 1;
     for (int i = 0; i < exp; i++) {

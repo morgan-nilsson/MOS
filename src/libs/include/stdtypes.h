@@ -11,6 +11,8 @@ typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed int int32_t;
 
+typedef uint32_t size_t;
+
 typedef struct {
     uint32_t ds;
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
