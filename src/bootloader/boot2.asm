@@ -21,11 +21,6 @@ puts:
 .done:
     ret
 
-kernel_load_error:
-    mov si, msgKernelFailed
-    call puts
-    hlt
-
 main:
     cli		
     push cs
@@ -35,21 +30,26 @@ main:
     mov al, 0x3
     int 0x10
 
-; load kernel into memery at 0x8000
-loadKernel: 
     xor ax, ax
     mov es, ax
+    mov bx, 0x8000      ; Load address
 
-    mov ah, 0x02
-    mov al, 0x40        ; reading 0x40 sector
-    mov ch, 0x00
-    mov cl, 0x04        ; sector = 4
-    mov dh, 0x00        ; head = 0
+    mov ah, 0x02        ; BIOS read function
+    mov dh, 0x00        ; Head = 0
+    mov ch, 0x00        ; Cylinder = 0
+    mov cl, 0x04        ; Start at sector 4
 
-    mov bx, 0x8000
+    mov al, 0x80        ; Read 128 sectors ie 65536
     int 0x13
+    jc disk_error
+    jmp done_loading
 
-    jc kernel_load_error
+disk_error:
+    mov si, msgKernelFailed
+    call puts
+    hlt                 ; Halt on error
+
+done_loading:
 
     call getVbeInfo
 
