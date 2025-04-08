@@ -33,8 +33,8 @@ static uint32_t page_table[1024][1024] __attribute__((aligned(4096)));
 
 void init_paging() {
 
-    for (int i = 0; i < 1024; i++) {
-        for (int j = 0; j < 1024; j++) {
+    for (unsigned int i = 0; i < 1024; i++) {
+        for (unsigned int j = 0; j < 1024; j++) {
             uint32_t address = (i * 1024 + j) * 0x1000;
             uint32_t flags = PAGE_PRESENT | PAGE_WRITE;
 
@@ -124,7 +124,7 @@ int sys_sleep(int ms, char unused, char unused2, char unused3, char unused4) {
 
 void init_syscalls() {
     // add syscall interrupt
-    set_idt_gate(0x80, (uint32_t)syscall_handler, 0x08, 0x8E);
+    set_idt_gate(0x80, (uintptr_t)syscall_handler, 0x08, 0x8E);
 }
 
 int syscall(unsigned int num, int arg1, int arg2, int arg3, int arg4, int arg5) {

@@ -181,7 +181,7 @@ void write_hex_8(uint8_t n) {
 
 }
 
-void write_int(int32_t n) {
+void write_int(isize n) {
 
     char number[33];
 
@@ -312,7 +312,7 @@ void dump_from_stack(registers_t *regs, size_t size) {
 
     write_string("Address    | Values\n");
 
-    for (uint32_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
 
         if (i % 4 == 0) {
 
@@ -321,7 +321,7 @@ void dump_from_stack(registers_t *regs, size_t size) {
 
         }
 
-        write_hex(*(uint32_t*)(regs->esp + i * 4));
+        write_hex(*(size_t*)(regs->esp + i * 4));
 
         if (i % 4 == 3) {
 
@@ -357,7 +357,7 @@ void dump_from_memory_address(uint32_t address, size_t size) {
 
         }
 
-        write_hex(*(uint32_t*)(address + i * 4));
+        write_hex(*(size_t*)(address + i * 4));
 
         if (i % 4 == 3) {
 
