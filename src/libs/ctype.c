@@ -1,6 +1,6 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/ctype.h"
+#include "libs/ctype.h"
 
 int isalpah(int c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');

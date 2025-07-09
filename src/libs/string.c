@@ -1,6 +1,6 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/string.h"
+#include "libs/string.h"
 
 unsigned int strlen(const char *s) {
     if (s == 0) return 0;

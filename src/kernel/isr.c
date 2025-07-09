@@ -1,9 +1,9 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/isr.h"
-#include "../../libs/include/stdio.h"
-#include "../../kernel/include/idt.h"
-#include "../../driver/include/vga_driver.h"
+#include "kernel/isr.h"
+#include "libs/stdio.h"
+#include "kernel/idt.h"
+#include "driver/vga_driver.h"
 
 isr_t interrupt_handlers[256];
 

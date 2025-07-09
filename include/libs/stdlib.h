@@ -7,9 +7,9 @@
 #define HEAP_START 0x200000
 #define MEM_BLOCK_NODE_SIZE sizeof(mem_block_t)
 
-#include "../../libs/include/stdtypes.h"
-#include "../../libs/include/string.h"
-#include "../../libs/include/bool.h"
+#include "libs/stdtypes.h"
+#include "libs/string.h"
+#include "libs/bool.h"
 
 #ifndef NULL
 #define NULL ((void *)0)

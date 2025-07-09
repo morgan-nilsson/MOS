@@ -3,7 +3,7 @@
 #ifndef SRC_KERNEL_INCLUDE_IDT_H_
 #define SRC_KERNEL_INCLUDE_IDT_H_
 
-#include "../../libs/include/stdtypes.h"
+#include "libs/stdtypes.h"
 #define IDT_ENTRIES 256
 
 #define low_16(address) (uint16_t)((address) & 0xFFFF)

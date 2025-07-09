@@ -3,7 +3,7 @@
 #ifndef SRC_KERNEL_INCLUDE_ISR_H_
 #define SRC_KERNEL_INCLUDE_ISR_H_
 
-#include "../../libs/include/stdtypes.h"
+#include "libs/stdtypes.h"
 
 typedef void (*isr_t)(registers_t *);
 

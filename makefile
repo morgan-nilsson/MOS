@@ -4,25 +4,23 @@ ASM32_FLAGS=-f elf32
 ASM64_FLAGS=-f elf64
 
 CC=i686-elf-gcc
-CFLAGS=-ffreestanding -nostdlib -m32 -g
+CFLAGS=-ffreestanding -nostdlib -m32 -g -Iinclude
 LD = i686-elf-ld
 LD_FLAGS = -m elf_i386 -T $(LD_FILE) --oformat binary
-
-ZIG_FLAGS= -target x86-freestanding
 
 QEMU_FLAGS=-cpu qemu32 -m 4G
 
 BUILD_DIR=build
 SRC_DIR=src
 BOOTLOADER_DIR=$(SRC_DIR)/bootloader
-KERNEL_DIR=$(SRC_DIR)/kernel/src
-DRIVERS_DIR=$(SRC_DIR)/driver/src
-LIBS_DIR=$(SRC_DIR)/libs/src
+KERNEL_DIR=$(SRC_DIR)/kernel
+DRIVERS_DIR=$(SRC_DIR)/driver
+LIBS_DIR=$(SRC_DIR)/libs
 
 BOOT_IMG=$(BUILD_DIR)/boot.img
 KERNEL_BIN=$(KERNEL_BUILD_DIR)/kernel.bin
 
-LD_FILE=$(SRC_DIR)/buildTools/linker.ld
+LD_FILE=buildTools/linker.ld
 
 BOOTLOADER_BUILD_DIR=$(BUILD_DIR)/bootloader
 BOOTLOADER_1_BIN=$(BOOTLOADER_BUILD_DIR)/boot1.bin
@@ -39,13 +37,11 @@ KERNEL_ASM_FILES=$(KERNEL_DIR)/kernel-entry.asm $(KERNEL_DIR)/interrupt.asm
 KERNEL_C_FILES=$(wildcard $(KERNEL_DIR)/*.c)
 DRIVER_FILES=$(wildcard $(DRIVERS_DIR)/*.c)
 LIBS_FILES=$(wildcard $(LIBS_DIR)/*.c)
-ZIG_FILES=$(LIBS_DIR)/math.zig
 
 KERNEL_OBJ_ASM_FILES=$(patsubst $(KERNEL_DIR)/%.asm,$(KERNEL_BUILD_DIR)/%.o,$(KERNEL_ASM_FILES))
 KERNEL_OBJ_C_FILES=$(patsubst $(KERNEL_DIR)/%.c,$(KERNEL_BUILD_DIR)/%.o,$(KERNEL_C_FILES))
 DRIVER_OBJ_FILES=$(patsubst $(DRIVERS_DIR)/%.c,$(DRIVER_BUILD_DIR)/%.o,$(DRIVER_FILES))
 LIBS_OBJ_FILES=$(patsubst $(LIBS_DIR)/%.c,$(LIBS_BUILD_DIR)/%.o,$(LIBS_FILES))
-ZIG_OBJ_FILE=$(BUILD_DIR)/zig.o
 
 # write the boot image together
 $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
@@ -69,9 +65,6 @@ $(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR) $(BOOTLOADER_BUI
 
 $(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(ZIG_OBJ_FILE) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
 	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(ZIG_OBJ_FILE)
-
-$(ZIG_OBJ_FILE): $(ZIG_FILES) | $(BUILD_DIR)
-	zig build-obj $(ZIG_FILES) $(ZIG_FLAGS) -femit-bin=$(ZIG_OBJ_FILE)
 
 # build the kernel asm files
 $(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_ASM_FILES)

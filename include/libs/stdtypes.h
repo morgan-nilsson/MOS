@@ -14,6 +14,7 @@ typedef signed int int32_t;
 typedef uint32_t usize;
 typedef uint32_t size_t;
 typedef int32_t isize;
+
 typedef uint32_t uintptr_t;
 typedef int32_t intptr_t;
 

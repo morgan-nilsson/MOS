@@ -1,9 +1,9 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/vga_driver.h"
-#include "../../libs/include/stdio.h"
-#include "../../libs/include/string.h"
-#include "../../libs/include/stdlib.h"
+#include "driver/vga_driver.h"
+#include "libs/stdio.h"
+#include "libs/string.h"
+#include "libs/stdlib.h"
 
 /**
  * Set the cursor on the screen to the given offset

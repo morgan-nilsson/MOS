@@ -1,4 +1,4 @@
-#include "../../driver/include/vga_driver.h"
+#include "driver/vga_driver.h"
 
 void assert(int ok, const char* file, const unsigned int linenumber, const char* s) {
 

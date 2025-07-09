@@ -2,8 +2,8 @@
 #ifndef SRC_DRIVER_INCLUDE_KEYBOARD_DRIVER_H_
 #define SRC_DRIVER_INCLUDE_KEYBOARD_DRIVER_H_
 
-#include "../../libs/include/stdtypes.h"
-#include "../../driver/include/keyboard.h"
+#include "libs/stdtypes.h"
+#include "driver/keyboard.h"
 
 
 #define IRQ1 33

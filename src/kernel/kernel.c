@@ -1,12 +1,12 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../../driver/include/keyboard_driver.h"
-#include "../../driver/include/vga_driver.h"
-#include "../../driver/include/timer_driver.h"
-#include "../../driver/include/vbe_driver.h"
-#include "../../libs/include/math.h"
-#include "../include/system.h"
-#include "../../libs/include/stdlib.h"
+#include "driver/keyboard_driver.h"
+#include "driver/vga_driver.h"
+#include "driver/timer_driver.h"
+#include "driver/vbe_driver.h"
+#include "libs/math.h"
+#include "libs/stdlib.h"
+#include "kernel/system.h"
 
 void _start(void) {
     init_paging();

@@ -2,7 +2,7 @@
 #ifndef SRC_DRIVER_INCLUDE_VGA_DRIVER_H_
 #define SRC_DRIVER_INCLUDE_VGA_DRIVER_H_
 
-#include "../../libs/include/stdtypes.h"
+#include "libs/stdtypes.h"
 
 /**
  * Definitions:

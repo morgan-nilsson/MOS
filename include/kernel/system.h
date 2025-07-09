@@ -3,7 +3,7 @@
 #ifndef SRC_KERNEL_INCLUDE_SYSTEM_H_
 #define SRC_KERNEL_INCLUDE_SYSTEM_H_
 
-#include "../../libs/include/stdtypes.h"
+#include "libs/stdtypes.h"
 #define NUM_SYSCALLS 3
 
 typedef int (*syscall_t)(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);

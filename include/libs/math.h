@@ -1,0 +1,9 @@
+// Copyright 2025 Morgan Nilsson
+
+#ifndef SRC_LIBS_INCLUDE_MATH_H_
+#define SRC_LIBS_INCLUDE_MATH_H_
+
+#define PI 3.14159265358979323846
+#define E 2.71828182845904523536
+
+#endif

@@ -1,6 +1,6 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/stdlib.h"
+#include "libs/stdlib.h"
 
 char* mem = (char *)HEAP_START;
 static mem_block_t *mem_start;

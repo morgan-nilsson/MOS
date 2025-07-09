@@ -1,4 +1,4 @@
-#include "../../driver/include/keyboard.h"
+#include "driver/keyboard.h"
 
 /**
  * Translates a virtual key to a character.

@@ -1,14 +1,14 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/system.h"
-#include "../include/isr.h"
-#include "../include/idt.h"
-#include "../../libs/include/string.h"
-#include "../../driver/include/vga_driver.h"
-#include "../../libs/include/stdlib.h"
-#include "../../driver/include/keyboard_driver.h"
-#include "../../driver/include/keyboard.h"
-#include "../../driver/include/timer_driver.h"
+#include "kernel/system.h"
+#include "kernel/isr.h"
+#include "kernel/idt.h"
+#include "libs/string.h"
+#include "driver/vga_driver.h"
+#include "libs/stdlib.h"
+#include "driver/keyboard_driver.h"
+#include "driver/keyboard.h"
+#include "driver/timer_driver.h"
 
 extern void syscall_handler();
 

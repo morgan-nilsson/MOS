@@ -1,10 +1,10 @@
 // Copyright 2025 Morgan Nilsson
 
-#include "../include/keyboard_driver.h"
-#include "../include/vga_driver.h"
-#include "../../libs/include/stdio.h"
-#include "../../kernel/include/isr.h"
-#include "../../driver/include/keyboard.h"
+#include "driver/keyboard_driver.h"
+#include "driver/vga_driver.h"
+#include "libs/stdio.h"
+#include "kernel/isr.h"
+#include "driver/keyboard.h"
 
 static void keyboard_callback(registers_t *r) {
     uint8_t scancode = port_byte_in(0x60);
