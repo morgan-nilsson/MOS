@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "vbe_driver.h": "c"
+        "*.dbclient-js": "javascript",
+        "stdlib.h": "c"
     }
 }

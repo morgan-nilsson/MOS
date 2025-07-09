@@ -23,7 +23,8 @@ typedef struct mem_block {
     struct mem_block *prev;
 } mem_block_t;
 
-void *mem_alloc(uint32_t size);
+void init_mem_alloc();
+void *mem_alloc(uint32_t bytes);
 void mem_free(void *ptr);
 
 void itoa(int n, char *str, int base);

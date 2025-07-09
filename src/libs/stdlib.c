@@ -12,13 +12,13 @@ void init_mem_alloc() {
     mem_start->prev = NULL;
 }
 
-void *find_best_mem_block(mem_block_t *memLL, uint32_t size) {
+void *find_best_mem_block(mem_block_t *memLL, uint32_t bytes) {
     mem_block_t *best_mem_block = NULL;
     uint32_t best_mem_block_size = HEAP_SIZE_BYTES + 1;
 
     mem_block_t *curr_block = mem_start;
     while (curr_block) {
-        if (curr_block->free && curr_block->size >= size + MEM_BLOCK_NODE_SIZE 
+        if (curr_block->free && curr_block->size >= bytes + MEM_BLOCK_NODE_SIZE 
             && curr_block->size <= best_mem_block->size) {
                 best_mem_block = curr_block;
                 best_mem_block_size = curr_block->size;
@@ -30,18 +30,18 @@ void *find_best_mem_block(mem_block_t *memLL, uint32_t size) {
     return best_mem_block;
 }
 
-void *mem_alloc(uint32_t size) {
-    mem_block_t *best_mem_block = find_best_mem_block(mem_start, size);
+void *mem_alloc(uint32_t bytes) {
+    mem_block_t *best_mem_block = find_best_mem_block(mem_start, bytes);
 
     if (best_mem_block != NULL) {
-        best_mem_block->size = best_mem_block->size - size - MEM_BLOCK_NODE_SIZE;
+        best_mem_block->size = best_mem_block->size - bytes - MEM_BLOCK_NODE_SIZE;
 
         mem_block_t *new_mem_node = (mem_block_t *) (
             ( (uint8_t *) best_mem_block) 
                 + MEM_BLOCK_NODE_SIZE 
                 + best_mem_block->size);
             
-        new_mem_node->size = size;
+        new_mem_node->size = bytes;
         new_mem_node->free = false;
         new_mem_node->next = best_mem_block->next;
         new_mem_node->prev = best_mem_block;

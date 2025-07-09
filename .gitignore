@@ -1,4 +1,3 @@
 build/*
-.zig-cache/*
-notes
-zig-out/*
+notes.txt
+.vscode

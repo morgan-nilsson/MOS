@@ -12,24 +12,45 @@ void _start(void) {
     init_paging();
 
     clear_screen();
-    write_string("Installing isrs\n");
+    write_string("Installing isrs: ");
     isr_install();
+    write_string("Done\n");
 
-    write_string("Enabling external interrupts\n");
+    write_string("Enabling external interrupts: ");
     asm volatile("sti");
+    write_string("Done\n");
 
-    write_string("Installing keyboard driver\n");
+    write_string("Installing keyboard driver: ");
     init_keyboard();
-    write_string("Keyboard driver installed\n");
+    write_string("Done\n");
 
-    write_string("Installing timer\n");
+    write_string("Installing timer: ");
     init_timer(1000);
+    write_string("Done\n");
 
+    write_string("Init syscalls: ");
     init_syscalls();
+    write_string("Done\n");
 
-    write_string("Starting timer\n");
-    //sys_sleep(1000, 0, 0, 0, 0);
-    syscall(2, 1000, 0, 0, 0, 0);
+    write_string("Starting mem test\n");
+
+    write_string("Init memAlloc: ");
+    init_mem_alloc();
+    write_string("Done\n");
+
+    void *ptr = NULL;
+
+    for (uint8_t i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+            write_string("Freeing previous allocation\n");
+            mem_free(ptr);
+        }
+        write_string("Allocating 1000 bytes: ");
+        ptr = mem_alloc(1000);
+        write_string("Done ");
+        write_hex((uintptr_t)ptr);
+        write_string("\n");
+    }
 
     write_string("\nEnd\n");
 
