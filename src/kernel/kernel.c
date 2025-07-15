@@ -7,6 +7,19 @@
 #include "libs/math.h"
 #include "libs/stdlib.h"
 #include "kernel/system.h"
+#include "kernel/scheduler.h"
+
+void task1(void) {
+    write_string("1");
+    while (1) {
+    }
+}
+
+void task2(void) {
+    write_string("2");
+    while (1) {
+    }
+}
 
 void _start(void) {
     init_paging();
@@ -25,7 +38,7 @@ void _start(void) {
     write_string("Done\n");
 
     write_string("Installing timer: ");
-    init_timer(1000);
+    init_timer(100);
     write_string("Done\n");
 
     write_string("Init syscalls: ");
@@ -38,21 +51,14 @@ void _start(void) {
     init_mem_alloc();
     write_string("Done\n");
 
-    void *ptr = NULL;
+    write_string("Adding tasks: ");
+    add_task(task1);
+    add_task(task2);
+    write_string("Done\n");
 
-    for (uint8_t i = 0; i < 10; i++) {
-        if (i % 2 == 0) {
-            write_string("Freeing previous allocation\n");
-            mem_free(ptr);
-        }
-        write_string("Allocating 1000 bytes: ");
-        ptr = mem_alloc(1000);
-        write_string("Done ");
-        write_hex((uintptr_t)ptr);
-        write_string("\n");
-    }
-
-    write_string("\nEnd\n");
+    write_string("Activating scheduler: ");
+    activate_scheduler();
+    write_string("Done\n");
 
     while (1);
 }

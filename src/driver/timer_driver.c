@@ -4,6 +4,7 @@
 #include "libs/stdio.h"
 #include "driver/vga_driver.h"
 #include "libs/stdlib.h"
+#include "kernel/scheduler.h"
 
 volatile uint32_t tick = 0;
 
@@ -12,7 +13,10 @@ volatile uint32_t tick = 0;
 static void timer_callback(registers_t *regs) {
 
     ++tick;
-    UNUSED(regs);
+
+    scheduler_timer_callback(regs);
+
+    port_byte_out(0x20, 0x20);
 }
 
 void init_timer(uint32_t frequency) {

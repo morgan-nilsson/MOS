@@ -78,7 +78,7 @@ int get_offset(int column, int row) {
  */
 int get_newline_offset(int offset) {
 
-    get_offset(0, get_row_from_offset(offset) + 1);
+    return get_offset(0, get_row_from_offset(offset) + 1);
 
 }
 
@@ -197,7 +197,7 @@ void write_int(isize n) {
  */
 void clear_screen() {
 
-    for (int i = 0; i < VGA_MAX_COLUMNS * VGA_MAX_COLUMNS; i++) {
+    for (int i = 0; i < VGA_MAX_COLUMNS * VGA_MAX_ROWS; i++) {
 
         set_char_at_video_memory(' ', i * 2);
 
@@ -252,7 +252,6 @@ void write_string(const char *s) {
     }
 
     set_cursor(offset);
-    int i = 0xff;
 
     return;
 

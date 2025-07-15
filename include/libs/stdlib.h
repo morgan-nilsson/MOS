@@ -3,7 +3,7 @@
 #ifndef SRC_LIBS_INCLUDE_STDLIB_H_
 #define SRC_LIBS_INCLUDE_STDLIB_H_
 
-#define HEAP_SIZE_BYTES 4096
+#define HEAP_SIZE_BYTES 4096 * 32 // room for 32 tasks
 #define HEAP_START 0x200000
 #define MEM_BLOCK_NODE_SIZE sizeof(mem_block_t)
 
@@ -15,7 +15,6 @@
 #define NULL ((void *)0)
 #endif
 
-// memory manigment struct is a dLL
 typedef struct mem_block {
     uint32_t size;
     bool free;

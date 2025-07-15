@@ -9,6 +9,7 @@ typedef void (*isr_t)(registers_t *);
 
 void register_interrupt_handler(uint8_t n, isr_t handler);
 void isr_install();
+uint8_t get_pic_mask();
 
 #define IRQ0 32
 
