@@ -19,7 +19,7 @@ void *find_best_mem_block(mem_block_t *memLL, uint32_t bytes) {
     mem_block_t *curr_block = mem_start;
     while (curr_block) {
         if (curr_block->free && curr_block->size >= bytes + MEM_BLOCK_NODE_SIZE 
-            && curr_block->size <= best_mem_block->size) {
+            && curr_block->size <= best_mem_block_size) {
                 best_mem_block = curr_block;
                 best_mem_block_size = curr_block->size;
             }

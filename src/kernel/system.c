@@ -50,6 +50,9 @@ void init_paging() {
         page_directory[i] = (uint32_t)page_table[i] | pde_flags;
     }
 
+    // unmap null page
+    page_table[0][0] = 0;
+
     asm volatile("mov %0, %%cr3" : : "r" (page_directory));
 
     uint32_t cr0;

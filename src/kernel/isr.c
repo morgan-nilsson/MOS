@@ -123,6 +123,11 @@ char *exeception_msgs[] = {
 void isr_handler(registers_t *r) {
     write_string(exeception_msgs[r->int_no]);
     write_newline();
+    dump_registers(r);
+
+    for (;;) {
+        __asm__ volatile ("hlt"); // sleep this CPU forever
+    }
 }
 
 void irq_handler(registers_t *r) {
