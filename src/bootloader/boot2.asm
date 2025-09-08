@@ -123,24 +123,39 @@ mov cr0, eax
 
 jmp 0x08:start_protected_mode
 
-GDT_Start:      ; flat mode
+GDT_Start:
     null_desc:
         dd 0
         dd 0
-    code_desc:
+    kernel_code_desc:
         dw 0xffff
         dw 0
         db 0
         db 0x9a             ;10011010
         db 0xcf             ;11001111
         db 0
-    data_desc:
+    kernel_data_desc:
         dw 0xffff
         dw 0
         db 0
         db 0x92             ;10010010
         db 0xcf             ;11001111
         db 0
+    user_code_desc:
+        dw 0xffff
+        dw 0
+        db 0
+        db 0xfa             ;11111010
+        db 0xcf             ;11001111
+        db 0
+    user_data_desc:
+        dw 0xffff
+        dw 0
+        db 0
+        db 0xf2             ;11110010
+        db 0xcf             ;11001111
+        db 0
+    
     GDT_End:
 
 GDT_Desc:
