@@ -8,6 +8,7 @@
 #include "libs/stdlib.h"
 #include "kernel/system.h"
 #include "kernel/scheduler.h"
+#include "kernel/gdt.h"
 
 void task1(void) {
     write_string("1");
@@ -49,6 +50,10 @@ void _start(void) {
 
     write_string("Init memAlloc: ");
     init_mem_alloc();
+    write_string("Done\n");
+
+    write_string("Replacing bootloader GDT: ");
+    init_gdt();
     write_string("Done\n");
 
     write_string("Adding tasks: ");

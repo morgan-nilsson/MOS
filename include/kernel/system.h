@@ -6,11 +6,6 @@
 #include "libs/stdtypes.h"
 #define NUM_SYSCALLS 3
 
-#define KCODE 0x08
-#define KDATA 0x10
-
-#define UCODE 0x1b
-#define UDATA 0x23
 
 typedef int (*syscall_t)(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 
