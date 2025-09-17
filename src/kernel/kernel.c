@@ -9,6 +9,7 @@
 #include "kernel/system.h"
 #include "kernel/scheduler.h"
 #include "kernel/gdt.h"
+#include "kernel/paging.h"
 
 void task1(void) {
     write_string("1");
