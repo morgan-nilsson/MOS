@@ -10,6 +10,8 @@ vbe2 db "VBE 2.0", 0
 vbeUnsuported db "VBE unsupported", 0
 VBEError db "VBE call failed", 0
 debug db "Debug", 0
+a20ns db "A20 not supported", 0
+a20failed db "A20 activation failed", 0
 
 puts:
     lodsb
@@ -41,7 +43,7 @@ loadKernel:
     mov es, ax
 
     mov ah, 0x02
-    mov al, 0x40        ; reading 0x40 sector
+    mov al, 0x80        ; reading 0x80 sectors
     mov ch, 0x00
     mov cl, 0x04        ; sector = 4
     mov dh, 0x00        ; head = 0
@@ -114,6 +116,40 @@ getVbeInfo:
 
 VBEAfter:
 
+use16
+mov     ax,2403h                ;--- A20-Gate Support ---
+int     15h
+jb      a20_ns                  ;INT 15h is not supported
+cmp     ah,0
+jnz     a20_ns                  ;INT 15h is not supported
+
+mov     ax,2402h                ;--- A20-Gate Status ---
+int     15h
+jb      a20_failed              ;couldn't get status
+cmp     ah,0
+jnz     a20_failed              ;couldn't get status
+
+cmp     al,1
+jz      a20_activated           ;A20 is already activated
+
+mov     ax,2401h                ;--- A20-Gate Activate ---
+int     15h
+jb      a20_failed              ;couldn't activate the gate
+cmp     ah,0
+jnz     a20_failed              ;couldn't activate the gate
+
+a20_ns:
+    mov si, a20ns
+    call puts
+    hlt
+
+a20_failed:
+    mov si, a20failed
+    call puts
+    hlt
+
+a20_activated:
+
 cli
 lgdt [GDT_Desc]
 
@@ -169,21 +205,9 @@ start_protected_mode:
     mov edx, enteredProtectedMode
     mov esi, 0xb8000
 
-protectedModeMsg:
-
-    mov al, [edx]
-    or al, al
-    jz enterKernel
-    mov [esi], al
-
-    add esi, 2
-    add edx, 1
-
-    jmp protectedModeMsg
-
 enterKernel:
 
     cli
-    call 0x8000
+    jmp 0x8000
 
     hlt
