@@ -5,15 +5,17 @@
 #include "libs/stdio.h"
 #include "kernel/isr.h"
 #include "driver/keyboard.h"
+#include "libs/stdlib.h"
 
 static void keyboard_callback(registers_t *r) {
+    UNUSED(r);
     uint8_t scancode = port_byte_in(0x60);
     print_letter(scancode);
     write_newline();
 }
 
 void init_keyboard(void) {
-    //register_interrupt_handler(IRQ1, keyboard_callback);
+    register_interrupt_handler(IRQ1, keyboard_callback);
 }
 
 uint8_t get_scancode() {
@@ -61,7 +63,7 @@ char get_char(void) {
         }
 
         // Convert the scancode to a character
-        char c = Virtual_key_to_char(translate_PS2_scancode_to_Vkey(scancode));
+        char c = virtual_key_to_char(translate_PS2_scancode_to_Vkey(scancode));
 
         if (c) return c; // Only return valid characters
     }
@@ -177,5 +179,6 @@ VirtualKey translate_PS2_scancode_to_Vkey(uint8_t scancode) {
         case 0x73: return VK_OEM_2;
         case 0x74: return VK_OEM_102;
         case 0x75: return VK_PROCESSKEY;
+        default: return VK_UNDEFINED;
     }
 }

@@ -5,6 +5,7 @@
  * @brief Virtual key codes
  */
 typedef enum {
+    VK_UNDEFINED = 0x00,  // Undefined key
     VK_LBUTTON = 0x01,  // Left mouse button
     VK_RBUTTON = 0x02,  // Right mouse button
     VK_CANCEL = 0x03,  // Control-break processing
@@ -165,6 +166,6 @@ typedef enum {
  * @param vkey The virtual key to convert
  * @return The character corresponding to the virtual key
  */
-char Virtual_key_to_char(VirtualKey vkey);
+char virtual_key_to_char(VirtualKey vkey);
 
 #endif

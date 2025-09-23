@@ -1,6 +1,7 @@
 // Copyright 2025 Morgan Nilsson
 
 #include "libs/string.h"
+#include "libs/stdtypes.h"
 
 unsigned int strlen(const char *s) {
     if (s == 0) return 0;
@@ -22,7 +23,7 @@ void strcpy(char* dest, const char* src) {
 void strncpy(char* dest, const char* src, unsigned int n) {
     if (dest == NULL) return;
     if (src == NULL) return;
-    int length = strlen(src);
+    usize length = strlen(src);
     if (n < length) length = n;
     for (unsigned int i = 0; i < n; i++) {
         dest[i] = src[i];
@@ -53,17 +54,17 @@ int strncmp(const char *s1, const char *s2, unsigned int n) {
 }
 
 void strcat(char *dest, const char *src) {
-    int dest_len = strlen(dest);
-    int src_len = strlen(src);
-    for (int i = 0; i < src_len; i++) {
+    usize dest_len = strlen(dest);
+    usize src_len = strlen(src);
+    for (usize i = 0; i < src_len; i++) {
         dest[dest_len + i] = src[i];
     }
     dest[dest_len + src_len] = '\0';
 }
 
-void strncat(char *dest, const char *src, unsigned int n) {
-    int dest_len = strlen(dest);
-    int src_len = strlen(src);
+void strncat(char *dest, const char *src, usize n) {
+    usize dest_len = strlen(dest);
+    usize src_len = strlen(src);
     if (n < src_len) src_len = n;
     for (unsigned int i = 0; i < src_len; i++) {
         dest[dest_len + i] = src[i];
@@ -125,26 +126,26 @@ char *strtok(char *str, const char *delim) {
 }
 
 // copys n bytes from src to dest
-void memcpy(void *dest, const void *src, unsigned int nbytes) {
+void memcpy(void *dest, const void *src, usize nbytes) {
     unsigned char *d = (unsigned char*)dest;
     const unsigned char *s = (const unsigned char*)src;
 
-    for (unsigned int i = 0; i < nbytes; i++) {
+    for (usize i = 0; i < nbytes; i++) {
         d[i] = s[i];
     }
 }
 
-void memset(void *dest, int c, unsigned int nbytes) {
+void memset(void *dest, int c, usize nbytes) {
     unsigned char *ptr = (unsigned char*)dest;
-    for (int index = 0; index < nbytes; ++index) {
+    for (usize index = 0; index < nbytes; ++index) {
         ptr[index] = c;
     }
 }
 
-int memcmp(const void *s1, const void *s2, unsigned int n) {
+int memcmp(const void *s1, const void *s2, usize n) {
     const unsigned char *a = (const unsigned char*)s1;
     const unsigned char *b = (const unsigned char*)s2;
-    for (unsigned int i = 0; i < n; i++) {
+    for (usize i = 0; i < n; i++) {
         if (a[i] != b[i]) return a[i] < b[i] ? -1 : 1;
     }
     return 0;

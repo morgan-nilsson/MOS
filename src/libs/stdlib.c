@@ -12,7 +12,7 @@ void init_mem_alloc() {
     mem_start->prev = NULL;
 }
 
-void *find_best_mem_block(mem_block_t *memLL, uint32_t bytes) {
+void *find_best_mem_block(uint32_t bytes) {
     mem_block_t *best_mem_block = NULL;
     uint32_t best_mem_block_size = HEAP_SIZE_BYTES + 1;
 
@@ -31,7 +31,7 @@ void *find_best_mem_block(mem_block_t *memLL, uint32_t bytes) {
 }
 
 void *mem_alloc(uint32_t bytes) {
-    mem_block_t *best_mem_block = find_best_mem_block(mem_start, bytes);
+    mem_block_t *best_mem_block = find_best_mem_block(bytes);
 
     if (best_mem_block != NULL) {
         best_mem_block->size = best_mem_block->size - bytes - MEM_BLOCK_NODE_SIZE;
@@ -71,7 +71,7 @@ mem_block_t *merge_node_forward(mem_block_t *node) {
     return node;
 }
 
-void *merge_node_previous(mem_block_t *node) {
+void merge_node_previous(mem_block_t *node) {
     mem_block_t *prev_node = node->prev;
     if (prev_node != NULL && prev_node->free) {
         prev_node->size += node->size;

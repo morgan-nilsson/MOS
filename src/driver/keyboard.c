@@ -5,7 +5,7 @@
  * @param vkey The virtual key to translate
  * @return The character that the virtual key represents
  */
-char Virtual_key_to_char(VirtualKey vkey) {
+char virtual_key_to_char(VirtualKey vkey) {
     switch (vkey) {
         case VK_1: return '1';
         case VK_2: return '2';
@@ -63,6 +63,7 @@ char Virtual_key_to_char(VirtualKey vkey) {
         case VK_OEM_7: return '\'';
         case VK_OEM_8: return '`';
         case VK_OEM_102: return '\\';
+        default: return 0;
 
     }
 }

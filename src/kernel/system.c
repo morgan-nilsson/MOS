@@ -18,7 +18,11 @@ syscall_t syscall_table[NUM_SYSCALLS] = {
     (syscall_t) sys_sleep
 };
 
-int sys_read(int fd, char *buf, int count, char unused, char unused2) {
+int sys_read(int fd, int buf_ptr, int count, int unused, int unused2) {
+    UNUSED(unused);
+    UNUSED(unused2);
+    char *buf = (char *)buf_ptr;
+
     if (buf == NULL || count <= 0) {
         return -1;
     }
@@ -49,7 +53,11 @@ int sys_read(int fd, char *buf, int count, char unused, char unused2) {
     }
 }
 
-int sys_write(int fd, const char *buf, int count, char unused, char unused2) {
+int sys_write(int fd, int buf_ptr, int count, int unused, int unused2) {
+
+    UNUSED(unused);
+    UNUSED(unused2);
+    const char *buf = (char *)buf_ptr;
 
     switch (fd) {
     case 1:
@@ -69,9 +77,14 @@ int sys_write(int fd, const char *buf, int count, char unused, char unused2) {
     }
 }
 
-int sys_sleep(int ms, char unused, char unused2, char unused3, char unused4) {
+int sys_sleep(int ms, int unused, int unused2, int unused3, int unused4) {
+
+    UNUSED(unused);
+    UNUSED(unused2);
+    UNUSED(unused3);
+    UNUSED(unused4);
+
     asm ("sti");
-    char buf[256];
     uint32_t end = get_tick_count() + ms;
     while (1) {
         uint32_t now = get_tick_count();

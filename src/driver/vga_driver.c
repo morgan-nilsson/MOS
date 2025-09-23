@@ -345,8 +345,6 @@ void dump_from_memory_address(uint32_t address, size_t size) {
 
     write_string("Address    | Values\n");
 
-    uint32_t byte_max_offset = size * 4;
-
     for (uint32_t i = 0; i < size; ++i) {
 
         if (i % 4 == 0) {

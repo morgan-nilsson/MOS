@@ -15,6 +15,10 @@
 #define NULL ((void *)0)
 #endif
 
+#ifndef UNUSED
+#define UNUSED(x) (void)(x)
+#endif
+
 typedef struct mem_block {
     uint32_t size;
     bool free;
