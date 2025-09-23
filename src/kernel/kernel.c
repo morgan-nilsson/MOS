@@ -29,9 +29,6 @@ void _start(void) {
     clear_screen();
     write_string("Installing isrs: ");
     isr_install();
-    write_string("Done\n");
-
-    write_string("Enabling external interrupts: ");
     asm volatile("sti");
     write_string("Done\n");
 
@@ -47,14 +44,12 @@ void _start(void) {
     init_syscalls();
     write_string("Done\n");
 
-    write_string("Starting mem test\n");
+    write_string("Replacing bootloader GDT: ");
+    init_gdt();
+    write_string("Done\n");
 
     write_string("Init memAlloc: ");
     init_mem_alloc();
-    write_string("Done\n");
-
-    write_string("Replacing bootloader GDT: ");
-    init_gdt();
     write_string("Done\n");
 
     write_string("Adding tasks: ");

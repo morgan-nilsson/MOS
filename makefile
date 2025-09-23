@@ -4,7 +4,8 @@ ASM32_FLAGS=-f elf32
 ASM64_FLAGS=-f elf64
 
 CC=i686-elf-gcc
-CFLAGS=-ffreestanding -nostdlib -m32 -g -Iinclude -Wall -Wextra
+CFLAGS=-ffreestanding -nostdlib -m32 -g -Iinclude -fno-pic -fno-pie -fno-stack-protector -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow -fno-pic -fno-pie -fno-stack-protector -fno-omit-frame-pointer
+
 LD = i686-elf-ld
 LD_FLAGS = -m elf_i386 -T $(LD_FILE) --oformat binary
 
