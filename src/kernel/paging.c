@@ -17,17 +17,17 @@ static uint32_t page_directory[PDE_ENTRIES] __attribute__((aligned(4096)));
 // page table
 static uint32_t page_table[PDE_ENTRIES][PTE_ENTRIES] __attribute__((aligned(4096)));
 
-static inline void _map_page(uint32_t pde_index, uint32_t pte_index, physical_addr_t paddr, uint32_t flags) {
-    page_table[pde_index][pte_index] = (paddr & ~0xFFF) | (flags & 0xFFF);
-}
+#define _map_page(pd_index, pte_index, paddr, flags) \
+    page_table[pd_index][pte_index] = (paddr & ~0xFFF) | (flags & 0xFFF)
 
-static inline void _map_directory(uint32_t pde_index, uint32_t *page_table, uint32_t flags) {
-    page_directory[pde_index] = (uint32_t)page_table | flags;
-}
+#define _map_directory(pd_index, pt_index, flags) \
+    page_directory[pd_index] = (pt_index & ~0xFFF) | (flags & 0xFFF)
+
 
 void init_paging() {
 
-    for (unsigned int i = 0; i < PDE_ENTRIES; i++) {
+    // ignore last page directory entry
+    for (unsigned int i = 0; i < PDE_ENTRIES - 1; i++) {
 
         // select flag type
         uint32_t pde_flags = PAGE_PRESENT | PAGE_WRITE;
@@ -36,15 +36,17 @@ void init_paging() {
         for (unsigned int j = 0; j < PTE_ENTRIES; j++) {
             uint32_t paddr = (i * PTE_ENTRIES + j) * 0x1000;
 
-            
-            page_table[i][j] = (paddr & ~0xFFF) | (pde_flags & 0xFFF);
+            _map_page(i, j, paddr, pde_flags);
         }
 
-        page_directory[i] = (uint32_t)page_table[i] | pde_flags;
+        _map_directory(i, (uint32_t)page_table[i], pde_flags);
     }
 
     // unmap null page
     page_table[0][0] = 0;
+
+    // map the page directory to itself
+    _map_directory(1023, (uint32_t)page_directory, PAGE_PRESENT | PAGE_WRITE);
 
     asm volatile("mov %0, %%cr3" : : "r" (page_directory));
 
