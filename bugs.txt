@@ -1,2 +1,0 @@
-- printing from two different tasks will cause crash
-- waiting in tasks can cause the task to become unresponsive
