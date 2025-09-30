@@ -4,9 +4,8 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-mod testing;
-
 pub mod stdio;
+pub mod testing;
 
 #[cfg(not(test))]
 use core::panic::PanicInfo;
@@ -30,8 +29,8 @@ pub extern "C" fn _start() -> ! {
 }
 
 #[cfg(test)]
-pub fn test_runner(tests: &[&dyn testing::Testable]) {
-    testing::test_runner(tests);
+pub fn test_runner(tests: &[&dyn testing::testing::Testable]) {
+    testing::testing::test_runner(tests);
 }
 
 

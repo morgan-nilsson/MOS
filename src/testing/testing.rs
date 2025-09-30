@@ -1,5 +1,4 @@
 
-pub mod serial;
 use crate::serial_print;
 use crate::serial_println;
 use crate::stdio;
