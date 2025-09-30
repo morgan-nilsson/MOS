@@ -1,15 +1,30 @@
 
-use core::panic::PanicInfo;
 pub mod serial;
-use crate::println;
 use crate::serial_print;
 use crate::serial_println;
+use crate::stdio;
+use core::panic::PanicInfo;
 
-#[cfg(not(test))]
+#[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+    serial_println!("[failed]\n");
+    serial_println!("Error: {}\n", info);
+    exit_qemu(QemuExitCode::Failed);
     loop {}
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use stdio::ports::port_byte_out;
+    const PORT: u16 = 0xf4;
+    port_byte_out(PORT, exit_code as u8);
 }
 
 #[inline]
@@ -18,7 +33,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     for test in tests {
         test.run();
     }
-    crate::exit_qemu(crate::QemuExitCode::Success);
+    exit_qemu(QemuExitCode::Success);
 }
 
 pub trait Testable {
