@@ -82,7 +82,7 @@ struct ScreenChar {
 
 #[repr(transparent)]
 struct Buffer {
-    chars: [[Volatile<ScreenChar>; VGA_MAX_COLUMNS]; VGA_MAX_ROWS],
+    rows: [[Volatile<ScreenChar>; VGA_MAX_COLUMNS]; VGA_MAX_ROWS],
 }
 
 
@@ -157,7 +157,7 @@ impl VGAWriter {
 
         let row = Self::calculate_row_from_offset(offset);
         let column = Self::calculate_column_from_offset(offset);
-        self.vga_buffer.chars[row][column].write(ScreenChar {
+        self.vga_buffer.rows[row][column].write(ScreenChar {
             ascii_character: c,
             color_code: self.color_code,
         });
@@ -167,9 +167,9 @@ impl VGAWriter {
 
         unsafe {
             copy_nonoverlapping(
-                self.vga_buffer.chars[1].as_ptr(),
-                self.vga_buffer.chars[0].as_mut_ptr(),
-                (VGA_MAX_ROWS - 1) * VGA_MAX_COLUMNS,
+                self.vga_buffer.rows[1].as_ptr(),
+                self.vga_buffer.rows[0].as_mut_ptr(),
+                VGA_MAX_COLUMNS,
             );
         }
 
