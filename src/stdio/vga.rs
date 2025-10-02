@@ -1,10 +1,8 @@
 use crate::stdio::ports;
-use core::{ptr::copy_nonoverlapping};
+use core::{ptr::copy};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
-
-
 
 const VGA_CTRL_REG: u16 = 0x3d4;
 const VGA_DATA_REG: u16 = 0x3d5;
@@ -85,35 +83,37 @@ struct Buffer {
     rows: [[Volatile<ScreenChar>; VGA_MAX_COLUMNS]; VGA_MAX_ROWS],
 }
 
+#[derive(Debug, Clone)]
+pub struct VGAError {}
+
+impl core::fmt::Display for VGAError {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "Error writing to VGA buffer")
+    }
+}
 
 pub struct VGAWriter {
-    cursor_offset: usize,
+    cursor_location: (usize, usize),
     color_code: ColorCode,
     vga_buffer: &'static mut Buffer,
 
-}
-
-impl core::fmt::Write for VGAWriter {
-    fn write_str(&mut self, s: &str) -> core::fmt::Result {
-        self.write_string(s).map_err(|_| core::fmt::Error)
-    }
 }
 
 impl VGAWriter {
     fn new(vga_buffer: &'static mut Buffer) -> Self {
         Self { 
             vga_buffer,
-            cursor_offset: 0, 
+            cursor_location: (0, 0), 
             color_code: ColorCode::new(Color::White, Color::Black)
         }
     }
 
     #[inline]
-    pub fn set_cursor(&mut self, offset: usize) {
+    pub fn set_cursor(&mut self, location: (usize, usize)) {
 
-        self.cursor_offset = offset;
+        self.cursor_location = location;
 
-        let offset = offset / 2;
+        let offset = (location.0 * VGA_MAX_COLUMNS) + location.1;
 
         ports::port_byte_out(VGA_CTRL_REG, VGA_OFFSET_HIGH);
         ports::port_byte_out(VGA_DATA_REG, (offset >> 8) as u8);
@@ -122,9 +122,9 @@ impl VGAWriter {
     }
 
     #[inline]
-    pub fn get_cursor(&self) -> usize {
+    pub fn get_cursor(&self) -> (usize, usize) {
 
-        self.cursor_offset
+        self.cursor_location
 
     }
 
@@ -133,60 +133,43 @@ impl VGAWriter {
         self.color_code = color_code;
     }
 
-    #[inline]
-    pub fn calculate_row_from_offset(offset: usize) -> usize {
-        offset / (2 * VGA_MAX_COLUMNS)
-    }
+    fn set_char_at_offset(&mut self, c: u8, location: (usize, usize)) {
 
-    #[inline]
-    pub fn calculate_column_from_offset(offset: usize) -> usize {
-        offset / 2 % VGA_MAX_COLUMNS
-    }
-
-    #[inline]
-    pub fn calculate_offset(column: usize, row: usize) -> usize {
-        2 * (row * VGA_MAX_COLUMNS + column)
-    }
-
-    #[inline]
-    fn calculate_newline_offset(offset: usize) -> usize {
-        Self::calculate_offset(0, Self::calculate_row_from_offset(offset) + 1)
-    }
-
-    fn set_char_at_offset(&mut self, c: u8, offset: usize) {
-
-        let row = Self::calculate_row_from_offset(offset);
-        let column = Self::calculate_column_from_offset(offset);
-        self.vga_buffer.rows[row][column].write(ScreenChar {
+        self.vga_buffer.rows[location.0][location.1].write(ScreenChar {
             ascii_character: c,
             color_code: self.color_code,
         });
     }
 
-    fn scroll_line(&mut self, offset: usize) -> usize {
+    fn scroll_line(&mut self) -> (usize, usize) {
 
         unsafe {
-            copy_nonoverlapping(
+            copy (
                 self.vga_buffer.rows[1].as_ptr(),
                 self.vga_buffer.rows[0].as_mut_ptr(),
-                VGA_MAX_COLUMNS,
+                VGA_MAX_COLUMNS * (VGA_MAX_ROWS - 1),
             );
         }
 
-        for i in 0..VGA_MAX_COLUMNS {
-            Self::set_char_at_offset(self, ' ' as u8, Self::calculate_offset(i, VGA_MAX_ROWS - 1));
-        }
+        self.fill_row(VGA_MAX_ROWS - 1, ' ' as u8);
 
-        offset - 2 * VGA_MAX_COLUMNS
+        self.set_cursor((self.cursor_location.0 - 1, self.cursor_location.1 % VGA_MAX_COLUMNS));
+
+        return self.cursor_location;
     }
 
     pub fn write_string(&mut self, s: &str) -> Result<(), VGAError> {
 
-        let mut offset: usize = self.get_cursor();
+        let mut cursor_location: (usize, usize) = self.get_cursor();
         for i in 0..s.len() {
 
-            if offset >= VGA_MAX_COLUMNS * VGA_MAX_ROWS * 2 {
-                offset = self.scroll_line(offset);
+            if cursor_location.1 == VGA_MAX_COLUMNS {
+                cursor_location.0 += 1;
+                cursor_location.1 = 0;
+            }
+
+            if cursor_location.0 >= VGA_MAX_ROWS {
+                cursor_location = self.scroll_line();
             }
 
             let c = s.chars().nth(i);
@@ -197,16 +180,17 @@ impl VGAWriter {
 
             if c == '\n' {
 
-                offset = Self::calculate_newline_offset(offset)
+                cursor_location.0 += 1;
+                cursor_location.1 = 0;
 
             } else {
 
-                self.set_char_at_offset(c as u8, offset);
-                offset += 2;
+                self.set_char_at_offset(c as u8, cursor_location);
+                cursor_location.1 += 1;
 
             }
 
-            self.set_cursor(offset);
+            self.set_cursor(cursor_location);
 
         }
 
@@ -216,20 +200,135 @@ impl VGAWriter {
 
     pub fn clear_screen(&mut self) {
 
-        for i in 0..(VGA_MAX_COLUMNS * VGA_MAX_ROWS) {
-            self.set_char_at_offset(' ' as u8, i);
+        for row in 0..VGA_MAX_ROWS {
+            self.fill_row(row, ' ' as u8);
         }
 
-        self.set_cursor(Self::calculate_offset(0, 0));
+        self.set_cursor((0, 0));
+    }
+
+    fn fill_row(&mut self, row: usize, c: u8) {
+
+        for col in 0..VGA_MAX_COLUMNS {
+            self.set_char_at_offset(c, (row, col));
+        }
 
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct VGAError {}
-
-impl core::fmt::Display for VGAError {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(f, "invalid first item to double")
+impl core::fmt::Write for VGAWriter {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.write_string(s).map_err(|_| core::fmt::Error)
     }
+}
+
+#[cfg(test)]
+fn get_screen_char_at_location(location: (usize, usize)) -> ScreenChar {
+    unsafe {
+        (*(VGA_BUFFER_START as *const Buffer)).rows[location.0][location.1].read()
+    }
+}
+
+#[cfg(test)]
+fn get_cursor() -> (usize, usize) {
+    ports::port_byte_out(VGA_CTRL_REG, VGA_OFFSET_HIGH);
+
+    let mut offset = (ports::port_byte_in(VGA_DATA_REG) as usize) << 8;
+    ports::port_byte_out(VGA_CTRL_REG, VGA_OFFSET_LOW);
+
+    offset += ports::port_byte_in(VGA_DATA_REG as u16) as usize;
+
+    return (offset / VGA_MAX_COLUMNS, offset % VGA_MAX_COLUMNS);
+}
+
+#[test_case]
+fn test_get_set_cursor() {
+    
+    VGA_WRITER.lock().set_cursor((5, 5));
+    assert_eq!(VGA_WRITER.lock().get_cursor(), (5, 5));
+    assert_eq!(get_cursor(), (5, 5));
+
+    VGA_WRITER.lock().set_cursor((0, 0));
+    assert_eq!(VGA_WRITER.lock().get_cursor(), (0, 0));
+    assert_eq!(get_cursor(), (0, 0));
+
+    VGA_WRITER.lock().set_cursor((24, 79));
+    assert_eq!(VGA_WRITER.lock().get_cursor(), (24, 79));
+    assert_eq!(get_cursor(), (24, 79));
+}
+
+#[test_case]
+fn test_write_char_at() {
+
+    VGA_WRITER.lock().clear_screen();
+
+    VGA_WRITER.lock().set_char_at_offset('a' as u8, (0, 0));
+    assert_eq!(get_screen_char_at_location((0, 0)).ascii_character, 'a' as u8);
+
+    VGA_WRITER.lock().set_char_at_offset('b' as u8, (5, 5));
+    assert_eq!(get_screen_char_at_location((5, 5)).ascii_character, 'b' as u8);
+
+    VGA_WRITER.lock().set_char_at_offset('c' as u8, (24, 79));
+    assert_eq!(get_screen_char_at_location((24, 79)).ascii_character, 'c' as u8);
+}
+
+#[test_case]
+fn test_clear_screen() {
+
+    VGA_WRITER.lock().clear_screen();
+
+    for row in 0..VGA_MAX_ROWS {
+        for col in 0..VGA_MAX_COLUMNS {
+            assert_eq!(get_screen_char_at_location((row, col)).ascii_character, ' ' as u8);
+        }
+    }
+
+}
+
+#[test_case]
+fn test_write_string() {
+
+    // write a string thay fits on one line
+    VGA_WRITER.lock().clear_screen();
+
+    VGA_WRITER.lock().write_string("Hello, World!").unwrap();
+
+    for (i, c) in "Hello, World!".chars().enumerate() {
+        assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
+    }
+
+    // write a string that has a newline
+    VGA_WRITER.lock().clear_screen();
+
+    VGA_WRITER.lock().write_string("Hello,\nWorld!").unwrap();
+    for (i, c) in "Hello,".chars().enumerate() {
+        assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
+    }
+    for (i, c) in "World!".chars().enumerate() {
+        assert_eq!(get_screen_char_at_location((1, i)).ascii_character, c as u8);
+    }
+
+    // write a string that exceeds one line
+    VGA_WRITER.lock().clear_screen();
+    let long_string = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+
+    VGA_WRITER.lock().write_string(long_string).unwrap();
+
+    for (i, c) in long_string.chars().enumerate() {
+        assert_eq!(get_screen_char_at_location((i / VGA_MAX_COLUMNS, i % VGA_MAX_COLUMNS)).ascii_character, c as u8);
+    }
+
+    // write a string that needs to be scrolled
+    VGA_WRITER.lock().clear_screen();
+
+    for i in 0..30 {
+        println!("{}", i);
+    }
+
+    // first 5 lines should be scrolled off
+    assert_eq!(get_screen_char_at_location((0, 0)).ascii_character, '5' as u8);
+
+    assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 0)).ascii_character, '2' as u8);
+    assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 1)).ascii_character, '9' as u8);
+
 }

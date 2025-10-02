@@ -2,8 +2,10 @@
 use crate::serial_print;
 use crate::serial_println;
 use crate::stdio;
-use core::panic::PanicInfo;
 
+
+#[cfg(test)]
+use core::panic::PanicInfo;
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
