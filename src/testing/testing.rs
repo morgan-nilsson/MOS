@@ -2,6 +2,7 @@
 use crate::serial_print;
 use crate::serial_println;
 use crate::stdio;
+use crate::hlt_loop;
 
 
 #[cfg(test)]
@@ -12,7 +13,7 @@ fn panic(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failed);
-    loop {}
+    hlt_loop()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
