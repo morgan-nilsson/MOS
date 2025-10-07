@@ -3,6 +3,7 @@ use core::{ptr::copy};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
+use x86_64::instructions::interrupts;
 
 const VGA_CTRL_REG: u16 = 0x3d4;
 const VGA_DATA_REG: u16 = 0x3d5;
@@ -289,51 +290,53 @@ fn test_clear_screen() {
 
 }
 
-// needs to be edited to not be affected by interrupts
-// #[test_case]
-// fn test_write_string() {
-// 
-//     // write a string thay fits on one line
-//     VGA_WRITER.lock().clear_screen();
-// 
-//     VGA_WRITER.lock().write_string("Hello, World!").unwrap();
-// 
-//     for (i, c) in "Hello, World!".chars().enumerate() {
-//         assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
-//     }
-// 
-//     // write a string that has a newline
-//     VGA_WRITER.lock().clear_screen();
-// 
-//     VGA_WRITER.lock().write_string("Hello,\nWorld!").unwrap();
-//     for (i, c) in "Hello,".chars().enumerate() {
-//         assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
-//     }
-//     for (i, c) in "World!".chars().enumerate() {
-//         assert_eq!(get_screen_char_at_location((1, i)).ascii_character, c as u8);
-//     }
-// 
-//     // write a string that exceeds one line
-//     VGA_WRITER.lock().clear_screen();
-//     let long_string = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-// 
-//     VGA_WRITER.lock().write_string(long_string).unwrap();
-// 
-//     for (i, c) in long_string.chars().enumerate() {
-//         assert_eq!(get_screen_char_at_location((i / VGA_MAX_COLUMNS, i % VGA_MAX_COLUMNS)).ascii_character, c as u8);
-//     }
-// 
-//     // write a string that needs to be scrolled
-//     VGA_WRITER.lock().clear_screen();
-// 
-//     for i in 0..30 {
-//         println!("{}", i);
-//     }
-// 
-//     // first 5 lines should be scrolled off
-//     assert_eq!(get_screen_char_at_location((0, 0)).ascii_character, '5' as u8);
-// 
-//     assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 0)).ascii_character, '2' as u8);
-//     assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 1)).ascii_character, '9' as u8);
-// 
-// }
+#[test_case]
+fn test_write_string() {
+
+    interrupts::without_interrupts(|| {
+        // write a string thay fits on one line
+        VGA_WRITER.lock().clear_screen();
+
+        VGA_WRITER.lock().write_string("Hello, World!").unwrap();
+
+        for (i, c) in "Hello, World!".chars().enumerate() {
+            assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
+        }
+
+        // write a string that has a newline
+        VGA_WRITER.lock().clear_screen();
+
+        VGA_WRITER.lock().write_string("Hello,\nWorld!").unwrap();
+        for (i, c) in "Hello,".chars().enumerate() {
+            assert_eq!(get_screen_char_at_location((0, i)).ascii_character, c as u8);
+        }
+        for (i, c) in "World!".chars().enumerate() {
+            assert_eq!(get_screen_char_at_location((1, i)).ascii_character, c as u8);
+        }
+
+        // write a string that exceeds one line
+        VGA_WRITER.lock().clear_screen();
+        let long_string = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+
+        VGA_WRITER.lock().write_string(long_string).unwrap();
+
+        for (i, c) in long_string.chars().enumerate() {
+            assert_eq!(get_screen_char_at_location((i / VGA_MAX_COLUMNS, i % VGA_MAX_COLUMNS)).ascii_character, c as u8);
+        }
+
+        // write a string that needs to be scrolled
+        VGA_WRITER.lock().clear_screen();
+
+        for i in 0..30 {
+            println!("{}", i);
+        }
+
+        // first 5 lines should be scrolled off
+        assert_eq!(get_screen_char_at_location((0, 0)).ascii_character, '5' as u8);
+
+        assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 0)).ascii_character, '2' as u8);
+        assert_eq!(get_screen_char_at_location((VGA_MAX_ROWS - 1, 1)).ascii_character, '9' as u8);
+
+    });
+
+}
