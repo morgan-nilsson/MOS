@@ -8,6 +8,7 @@
 pub mod stdio;
 pub mod testing;
 pub mod clock;
+pub mod keyboard;
 pub mod types;
 pub mod interrupts;
 pub mod memory;
@@ -22,14 +23,31 @@ fn panic(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
+use bootloader::{BootInfo, entry_point};
+
+#[cfg(not(test))]
+entry_point!( kernel_main );
+
 #[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
+fn kernel_main(bootinfo: &'static BootInfo) -> ! {
 
     init_os();
 
     #[cfg(test)]
     test_main();
 
+    hlt_loop();
+}
+
+#[cfg(test)]
+entry_point!(test_kernel_main);
+
+/// Entry point for `cargo test`
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+    // like before
+    init_os();
+    test_main();
     hlt_loop();
 }
 
