@@ -27,10 +27,11 @@ impl InterruptIndex {
     }
 }
 
-extern "x86-interrupt" fn timer_interrupt_handler(
-    _stack_frame: InterruptStackFrame)
-{
-    print!(".");
+use crate::clock::clock::PIT_TIMER;
+
+extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+
+    PIT_TIMER.lock().timer_callback(_stack_frame);
 
     unsafe {
         PICS.lock()
