@@ -1,5 +1,3 @@
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
 use linked_list_allocator::LockedHeap;
 
 #[global_allocator]
@@ -48,20 +46,21 @@ pub fn init_heap(
     Ok(())
 }
 
-use alloc::boxed::Box;
-
 #[test_case]
 fn simple_allocation() {
+    use alloc::boxed::Box;
+
     let heap_value_1 = Box::new(41);
     let heap_value_2 = Box::new(13);
     assert_eq!(*heap_value_1, 41);
     assert_eq!(*heap_value_2, 13);
 }
 
-use alloc::vec::Vec;
 
 #[test_case]
 fn large_vec() {
+    use alloc::vec::Vec;
+
     let n = 1000;
     let mut vec = Vec::new();
     for i in 0..n {
@@ -72,6 +71,8 @@ fn large_vec() {
 
 #[test_case]
 fn many_boxes() {
+    use alloc::boxed::Box;
+
     for i in 0..HEAP_SIZE {
         let x = Box::new(i);
         assert_eq!(*x, i);

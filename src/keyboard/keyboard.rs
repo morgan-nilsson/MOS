@@ -20,7 +20,7 @@ pub fn get_input() -> VirtualKey {
 
         let sc = port_byte_in(0x60);
 
-        // not keyup events
+        // not key-up events
         if sc & 0x80 != 0 {
             continue;
         }

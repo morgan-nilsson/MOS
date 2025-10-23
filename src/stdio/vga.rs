@@ -3,7 +3,6 @@ use core::{ptr::copy};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
-use x86_64::instructions::interrupts;
 
 const VGA_CTRL_REG: u16 = 0x3d4;
 const VGA_DATA_REG: u16 = 0x3d5;
@@ -293,8 +292,8 @@ fn test_clear_screen() {
 #[test_case]
 fn test_write_string() {
 
-    interrupts::without_interrupts(|| {
-        // write a string thay fits on one line
+        x86_64::instructions::interrupts::without_interrupts(|| {
+        // write a string that fits on one line
         VGA_WRITER.lock().clear_screen();
 
         VGA_WRITER.lock().write_string("Hello, World!").unwrap();

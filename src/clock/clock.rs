@@ -6,14 +6,14 @@ const PIT_NUMERATOR: usize = 1193180;
 
 pub struct PIT {
     frequency: usize,
-    tick: usize,
+    _tick: usize,
 }
 
 impl PIT {
 
     fn new(frequency: usize) -> Self {
 
-        let mut me = Self { frequency: 0, tick: 0 };
+        let mut me = Self { frequency: 0, _tick: 0 };
 
         me.set_frequency(frequency);
 
