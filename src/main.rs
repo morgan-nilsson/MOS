@@ -106,8 +106,8 @@ pub fn test_runner(tests: &[&dyn test::testing::Testable]) {
 }
 
 fn init_os() {
-    interrupts::interrupts::init_idt();
+    //interrupts::interrupt::init_idt();
     memory::gdt::init();
-    unsafe { interrupts::interrupts::PICS.lock().initialize() };
+    unsafe { interrupts::interrupt::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }

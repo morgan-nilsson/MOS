@@ -1,1 +1,2 @@
-pub mod interrupts;
+pub mod interrupt;
+pub mod structures;
