@@ -77,7 +77,7 @@ $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
 	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=$(KERNEL_LBA) conv=notrunc
 
 # boot1 embeds the size of boot2, so boot2 must be built first
-$(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm $(BOOTLOADER_2_BIN) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+$(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm $(BOOTLOADER_2_BIN) $(MEMORY_LAYOUT_INC) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) -DBOOT2_SECTORS=$(BOOTLOADER_2_SECTORS) $< -f bin -o $@
 
 $(MEMORY_LAYOUT_INC): $(INCLUDE_DIR)/kernel/memory_layout.h | $(BUILD_DIR) $(KERNEL_BUILD_DIR)

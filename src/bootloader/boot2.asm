@@ -1,6 +1,4 @@
 ; Copyright 2025 Morgan Nilsson
-org 0x1000
-bits 16
 %include "build/kernel/memory_layout.inc"
 
 %ifndef KERNEL_SECTORS
@@ -9,6 +7,9 @@ bits 16
 %if KERNEL_SECTORS = 0
 %error "KERNEL_SECTORS is 0; kernel.bin was not built before boot2"
 %endif
+
+org PHY_BOOTLOADER_2_START
+bits 16
 
 jmp main
 
@@ -46,10 +47,11 @@ main:
     mov al, 0x3
     int 0x10
 
-; load kernel into memery at 0x8000
+; load kernel into memery
 loadKernel: 
-    xor ax, ax
+    mov ax, PHY_KERNEL_START >> 4
     mov es, ax
+    mov bx, PHY_KERNEL_START & 0x0F
 
     mov ah, 0x02
     mov al, KERNEL_SECTORS
@@ -58,7 +60,6 @@ loadKernel:
     mov cl, 2 + (boot2_end - $$ + 511) / 512
     mov dh, 0x00        ; head = 0
 
-    mov bx, 0x8000
     int 0x13
 
     jc kernel_load_error
@@ -111,9 +112,13 @@ ALIGN(4)
 
 getVbeInfo:
     ; move BVE_INFO to the block
+    push es
+    push ds
+    pop es
     mov ax, 0x4F00
     mov di, VesaInfoBlockBuffer
     int 0x10
+    pop es
 
     ; check if the call was successful
     cmp ax, 0x004F
@@ -209,16 +214,15 @@ start_protected_mode:
 
     mov ax, 0x10
     mov ss, ax
-    mov esp, 0x9FC00
+    mov esp, PHY_EXTENDED_BIOS_DATA_AREA_START
 
     jmp enterKernel
     mov edx, enteredProtectedMode
-    mov esi, 0xb8000
 
 enterKernel:
 
     cli
-    jmp 0x8000
+    jmp PHY_KERNEL_START
 
     hlt
 

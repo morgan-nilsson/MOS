@@ -5,7 +5,9 @@
 %if BOOT2_SECTORS = 0
 %error "BOOT2_SECTORS is 0; boot2.bin was not built before boot1"
 %endif
-org 0x7c00
+%include "build/kernel/memory_layout.inc"
+
+org PHY_BOOTLOADER_1_START
 bits 16
 jmp loader
 
@@ -52,18 +54,18 @@ loader:
     xor ax, ax
     mov es, ax
 
-    mov ah, 0x02	        ; BIOS function read sector
-    mov al, BOOT2_SECTORS	; number of sectors in stage 2
-    mov ch, 0x00            ; 
-    mov cl, 0x02		    ; sector = 2
-    mov dh, 0x00		    ; head = 0
+    mov ah, 0x02	                ; BIOS function read sector
+    mov al, BOOT2_SECTORS	        ; number of sectors in stage 2
+    mov ch, 0x00 
+    mov cl, 0x02		            ; sector = 2
+    mov dh, 0x00		            ; head = 0
 
-    mov bx, 0x1000          ; address to read into
-    int 0x13		        ; call the bios
+    mov bx, PHY_BOOTLOADER_2_START  ; address to read into
+    int 0x13		                ; call the bios
 
     jc boot_error
 
-    jmp 0x1000
+    jmp PHY_BOOTLOADER_2_START
 
 boot_error:
     mov si, msg

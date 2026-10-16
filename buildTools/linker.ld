@@ -1,7 +1,7 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x8000;
+    . = PHY_KERNEL_START;
     
     .text : {
         *(.text)      /* Code section */
