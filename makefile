@@ -41,6 +41,16 @@ LIBS_BUILD_DIR=$(BUILD_DIR)/libs
 
 DRIVER_BUILD_DIR=$(BUILD_DIR)/driver
 
+sectors = $(shell echo $$(( ($$(wc -c < $(1)) + 511) / 512 )))
+
+KERNEL_SECTORS = $(call sectors,$(KERNEL_BIN))
+BOOTLOADER_2_SECTORS = $(call sectors,$(BOOTLOADER_2_BIN))
+KERNEL_LBA     = $(shell echo $$(( 1 + $(BOOTLOADER_2_SECTORS) )))
+TOTAL_SECTORS  = $(shell echo $$(( $(KERNEL_LBA) + $(KERNEL_SECTORS) )))
+# keep the image at least 8MB so the BIOS sees the same disk geometry
+MIN_IMG_SECTORS = 16384
+IMG_SECTORS    = $(shell echo $$(( $(TOTAL_SECTORS) > $(MIN_IMG_SECTORS) ? $(TOTAL_SECTORS) : $(MIN_IMG_SECTORS) )))
+
 # kernel-entry must be first in the list or the kernel will not have the correct entry point
 KERNEL_ASM_FILES=$(KERNEL_DIR)/kernel-entry.asm $(KERNEL_DIR)/interrupt.asm
 KERNEL_C_FILES=$(wildcard $(KERNEL_DIR)/*.c)
@@ -54,27 +64,29 @@ LIBS_OBJ_FILES=$(patsubst $(LIBS_DIR)/%.c,$(LIBS_BUILD_DIR)/%.o,$(LIBS_FILES))
 
 # write the boot image together
 $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
-	# 8MB boot image
-	dd if=/dev/zero of=$(BOOT_IMG) bs=8M count=1
+	# boot image large enough for stage 1, stage 2 and the kernel
+	dd if=/dev/zero of=$(BOOT_IMG) bs=512 count=$(IMG_SECTORS)
 
 	# write stage 1
 	dd if=$(BOOTLOADER_1_BIN) of=$(BOOT_IMG) bs=512 seek=0 conv=notrunc
 
 	# write stage 2
-	dd if=$(BOOTLOADER_2_BIN) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc count=2
+	dd if=$(BOOTLOADER_2_BIN) of=$(BOOT_IMG) bs=512 seek=1 conv=notrunc
 
 	# write kernel
-	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=3 conv=notrunc count=100
-	
-$(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
-	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot1.asm -f bin -o $(BOOTLOADER_1_BIN)
+	dd if=$(KERNEL_BIN) of=$(BOOT_IMG) bs=512 seek=$(KERNEL_LBA) conv=notrunc
+
+# boot1 embeds the size of boot2, so boot2 must be built first
+$(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm $(BOOTLOADER_2_BIN) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+	$(ASM) $(ASM_FLAGS) -DBOOT2_SECTORS=$(BOOTLOADER_2_SECTORS) $< -f bin -o $@
 
 $(MEMORY_LAYOUT_INC): $(INCLUDE_DIR)/kernel/memory_layout.h | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
 			{ echo "; GENERATED FILE - DO NOT EDIT. Source: $<"; \
 	  sed -nE 's/^[[:space:]]*#[[:space:]]*define[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)[[:space:]]+(.+)$$/%define \1 \2/p' $<; } > $@
 	
-$(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm $(MEMORY_LAYOUT_INC) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
-	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(BOOTLOADER_2_BIN)
+# boot2 embeds the size of the kernel, so the kernel must be built first
+$(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm $(MEMORY_LAYOUT_INC) $(KERNEL_BIN) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+	$(ASM) $(ASM_FLAGS) -DKERNEL_SECTORS=$(KERNEL_SECTORS) $< -f bin -o $@
 
 $(LD_FILE): $(LD_SRC_FILE) | $(BUILD_DIR)
 	$(CC) -E -P -x c -include include/kernel/memory_layout.h $< -o $@

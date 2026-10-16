@@ -1,4 +1,10 @@
 ; Copyright 2025 Morgan Nilsson
+%ifndef BOOT2_SECTORS
+%error "BOOT2_SECTORS not defined; pass -DBOOT2_SECTORS=n"
+%endif
+%if BOOT2_SECTORS = 0
+%error "BOOT2_SECTORS is 0; boot2.bin was not built before boot1"
+%endif
 org 0x7c00
 bits 16
 jmp loader
@@ -47,7 +53,7 @@ loader:
     mov es, ax
 
     mov ah, 0x02	        ; BIOS function read sector
-    mov al, 0x02	        ; reading size 2 sector
+    mov al, BOOT2_SECTORS	; number of sectors in stage 2
     mov ch, 0x00            ; 
     mov cl, 0x02		    ; sector = 2
     mov dh, 0x00		    ; head = 0

@@ -2,6 +2,14 @@
 org 0x1000
 bits 16
 %include "build/kernel/memory_layout.inc"
+
+%ifndef KERNEL_SECTORS
+%error "KERNEL_SECTORS not defined; pass -DKERNEL_SECTORS=n"
+%endif
+%if KERNEL_SECTORS = 0
+%error "KERNEL_SECTORS is 0; kernel.bin was not built before boot2"
+%endif
+
 jmp main
 
 msgKernelFailed db "Unable to read kernel to memory", 10, 13, 0
@@ -44,9 +52,10 @@ loadKernel:
     mov es, ax
 
     mov ah, 0x02
-    mov al, 0x80        ; reading 0x80 sectors
+    mov al, KERNEL_SECTORS
     mov ch, 0x00
-    mov cl, 0x04        ; sector = 4
+    ; CHS sectors are 1-based: boot1 is sector 1, boot2 follows, then the kernel
+    mov cl, 2 + (boot2_end - $$ + 511) / 512
     mov dh, 0x00        ; head = 0
 
     mov bx, 0x8000
@@ -212,3 +221,5 @@ enterKernel:
     jmp 0x8000
 
     hlt
+
+boot2_end:
