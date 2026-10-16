@@ -1,6 +1,7 @@
 ; Copyright 2025 Morgan Nilsson
 org 0x1000
 bits 16
+%include "build/kernel/memory_layout.inc"
 jmp main
 
 msgKernelFailed db "Unable to read kernel to memory", 10, 13, 0

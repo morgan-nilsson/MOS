@@ -1,5 +1,5 @@
 ASM=nasm
-ASM_FLAGS=-g 
+ASM_FLAGS=-g
 ASM32_FLAGS=-f elf32
 ASM64_FLAGS=-f elf64
 
@@ -7,21 +7,29 @@ CC=i686-elf-gcc
 CFLAGS=-ffreestanding -nostdlib -m32 -g -Iinclude -fno-pic -fno-pie -fno-stack-protector -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow -fno-pic -fno-pie -fno-stack-protector -fno-omit-frame-pointer
 
 LD = i686-elf-ld
-LD_FLAGS = -m elf_i386 -T $(LD_FILE) --oformat binary
+LD_FLAGS = -m elf_i386 --oformat binary
 
 QEMU_FLAGS=-cpu qemu32 -m 4G
 
-BUILD_DIR=build
 SRC_DIR=src
+
 BOOTLOADER_DIR=$(SRC_DIR)/bootloader
 KERNEL_DIR=$(SRC_DIR)/kernel
 DRIVERS_DIR=$(SRC_DIR)/driver
 LIBS_DIR=$(SRC_DIR)/libs
 
+INCLUDE_DIR=include
+MEMORY_LAYOUT_INC=$(BUILD_DIR)/kernel/memory_layout.inc
+
+BUILD_DIR=build
+
 BOOT_IMG=$(BUILD_DIR)/boot.img
 KERNEL_BIN=$(KERNEL_BUILD_DIR)/kernel.bin
 
-LD_FILE=buildTools/linker.ld
+BUILD_TOOLS_DIR=buildTools
+LD_SRC_FILE=$(BUILD_TOOLS_DIR)/linker.ld
+LD_FILE=$(BUILD_DIR)/linker.ld
+
 
 BOOTLOADER_BUILD_DIR=$(BUILD_DIR)/bootloader
 BOOTLOADER_1_BIN=$(BOOTLOADER_BUILD_DIR)/boot1.bin
@@ -60,12 +68,19 @@ $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
 	
 $(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot1.asm -f bin -o $(BOOTLOADER_1_BIN)
+
+$(MEMORY_LAYOUT_INC): $(INCLUDE_DIR)/kernel/memory_layout.h | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
+			{ echo "; GENERATED FILE - DO NOT EDIT. Source: $<"; \
+	  sed -nE 's/^[[:space:]]*#[[:space:]]*define[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)[[:space:]]+(.+)$$/%define \1 \2/p' $<; } > $@
 	
-$(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
+$(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm $(MEMORY_LAYOUT_INC) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) $(BOOTLOADER_DIR)/boot2.asm -f bin -o $(BOOTLOADER_2_BIN)
 
-$(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(ZIG_OBJ_FILE) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
-	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(ZIG_OBJ_FILE)
+$(LD_FILE): $(LD_SRC_FILE) | $(BUILD_DIR)
+	$(CC) -E -P -x c -include include/kernel/memory_layout.h $< -o $@
+
+$(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(LD_FILE) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
+	$(LD) $(LD_FLAGS) -T $(LD_FILE) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES)
 
 # build the kernel asm files
 $(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_ASM_FILES)
