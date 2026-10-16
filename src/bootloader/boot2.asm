@@ -199,7 +199,7 @@ start_protected_mode:
 
     mov ax, 0x10
     mov ss, ax
-    mov sp, 0x9FC00
+    mov esp, 0x9FC00
 
     jmp enterKernel
     mov edx, enteredProtectedMode
