@@ -19,6 +19,7 @@ DRIVERS_DIR=$(SRC_DIR)/driver
 LIBS_DIR=$(SRC_DIR)/libs
 
 INCLUDE_DIR=include
+MEMORY_LAYOUT_H=$(INCLUDE_DIR)/kernel/memory_layout.h
 MEMORY_LAYOUT_INC=$(BUILD_DIR)/kernel/memory_layout.inc
 
 BUILD_DIR=build
@@ -42,6 +43,28 @@ LIBS_BUILD_DIR=$(BUILD_DIR)/libs
 DRIVER_BUILD_DIR=$(BUILD_DIR)/driver
 
 sectors = $(shell echo $$(( ($$(wc -c < $(1)) + 511) / 512 )))
+
+# read a #define value from memory_layout.h, failing if it is missing
+layout = $(or $(shell sed -nE 's/^[[:space:]]*\#[[:space:]]*define[[:space:]]+$(1)[[:space:]]+([^[:space:]]+).*/\1/p' $(MEMORY_LAYOUT_H)),$(error $(1) not found in $(MEMORY_LAYOUT_H)))
+
+# layout values the build checks against
+PHY_BOOTLOADER_1_START            := $(call layout,PHY_BOOTLOADER_1_START)
+PHY_BOOTLOADER_1_END              := $(call layout,PHY_BOOTLOADER_1_END)
+PHY_BOOTLOADER_2_START            := $(call layout,PHY_BOOTLOADER_2_START)
+PHY_BOOTLOADER_2_END              := $(call layout,PHY_BOOTLOADER_2_END)
+PHY_KERNEL_START                  := $(call layout,PHY_KERNEL_START)
+PHY_EXTENDED_BIOS_DATA_AREA_START := $(call layout,PHY_EXTENDED_BIOS_DATA_AREA_START)
+
+BOOTLOADER_1_SIZE        := $(shell echo $$(( $(PHY_BOOTLOADER_1_END) - $(PHY_BOOTLOADER_1_START) + 1 )))
+BOOTLOADER_2_MAX_SECTORS := $(shell echo $$(( ($(PHY_BOOTLOADER_2_END) - $(PHY_BOOTLOADER_2_START) + 1) / 512 )))
+KERNEL_MAX_BYTES         := $(shell echo $$(( $(PHY_KERNEL_START) < $(PHY_EXTENDED_BIOS_DATA_AREA_START) ? \
+                                $(PHY_EXTENDED_BIOS_DATA_AREA_START) - $(PHY_KERNEL_START) : 0 )))
+
+# fail and delete $(1) if it is larger than $(2) bytes
+check_size = @s=$$(wc -c < $(1) | tr -d ' '); \
+	if [ $(2) -ne 0 ] && [ $$s -gt $(2) ]; then \
+		echo "Error: $(1) is $$s bytes, max $(2) ($(3))"; rm -f $(1); exit 1; \
+	fi
 
 KERNEL_SECTORS = $(call sectors,$(KERNEL_BIN))
 BOOTLOADER_2_SECTORS = $(call sectors,$(BOOTLOADER_2_BIN))
@@ -79,20 +102,24 @@ $(BOOT_IMG): $(BOOTLOADER_1_BIN) $(BOOTLOADER_2_BIN) $(KERNEL_BIN)
 # boot1 embeds the size of boot2, so boot2 must be built first
 $(BOOTLOADER_1_BIN): $(BOOTLOADER_DIR)/boot1.asm $(BOOTLOADER_2_BIN) $(MEMORY_LAYOUT_INC) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) -DBOOT2_SECTORS=$(BOOTLOADER_2_SECTORS) $< -f bin -o $@
+	$(call check_size,$@,$(BOOTLOADER_1_SIZE),PHY_BOOTLOADER_1_START..PHY_BOOTLOADER_1_END)
 
-$(MEMORY_LAYOUT_INC): $(INCLUDE_DIR)/kernel/memory_layout.h | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
+$(MEMORY_LAYOUT_INC): $(MEMORY_LAYOUT_H) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
 			{ echo "; GENERATED FILE - DO NOT EDIT. Source: $<"; \
 	  sed -nE 's/^[[:space:]]*#[[:space:]]*define[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)[[:space:]]+(.+)$$/%define \1 \2/p' $<; } > $@
 	
 # boot2 embeds the size of the kernel, so the kernel must be built first
 $(BOOTLOADER_2_BIN): $(BOOTLOADER_DIR)/boot2.asm $(MEMORY_LAYOUT_INC) $(KERNEL_BIN) | $(BUILD_DIR) $(BOOTLOADER_BUILD_DIR)
 	$(ASM) $(ASM_FLAGS) -DKERNEL_SECTORS=$(KERNEL_SECTORS) $< -f bin -o $@
+	$(call check_size,$@,$$(( $(BOOTLOADER_2_MAX_SECTORS) * 512 )),PHY_BOOTLOADER_2_START..PHY_BOOTLOADER_2_END)
 
-$(LD_FILE): $(LD_SRC_FILE) | $(BUILD_DIR)
-	$(CC) -E -P -x c -include include/kernel/memory_layout.h $< -o $@
+# the linker script takes its addresses from memory_layout.h, so relink when it changes
+$(LD_FILE): $(LD_SRC_FILE) $(MEMORY_LAYOUT_H) | $(BUILD_DIR)
+	$(CC) -E -P -x c -include $(MEMORY_LAYOUT_H) $< -o $@
 
 $(KERNEL_BIN): $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES) $(LD_FILE) | $(BUILD_DIR) $(KERNEL_BUILD_DIR)
 	$(LD) $(LD_FLAGS) -T $(LD_FILE) -o $(KERNEL_BIN) $(KERNEL_OBJ_ASM_FILES) $(KERNEL_OBJ_C_FILES) $(DRIVER_OBJ_FILES) $(LIBS_OBJ_FILES)
+	$(call check_size,$@,$(KERNEL_MAX_BYTES),PHY_KERNEL_START..PHY_EXTENDED_BIOS_DATA_AREA_START)
 
 # build the kernel asm files
 $(KERNEL_OBJ_ASM_FILES): $(KERNEL_BUILD_DIR) $(KERNEL_ASM_FILES)

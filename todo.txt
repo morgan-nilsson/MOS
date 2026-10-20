@@ -1,0 +1,4 @@
+Move everything to correct memory map model
+Cleanup hardcoded values in make process
+Make the kernel build for many platforms not just i386
+Make bootloader for 64 bit mode
