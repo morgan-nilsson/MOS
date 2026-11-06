@@ -1,4 +1,5 @@
 // Copyright 2025 Morgan Nilsson
+#include "libs/stdio.h"
 
 unsigned char port_byte_in(unsigned short port) {
     unsigned char result;

@@ -5,6 +5,11 @@
 char* mem = (char *)HEAP_START;
 static mem_block_t *mem_start;
 
+void merge_node_previous(mem_block_t *node);
+void *find_best_mem_block(uint32_t bytes);
+void merge_node_previous(mem_block_t *node);
+mem_block_t *merge_node_forward(mem_block_t *node);
+
 void init_mem_alloc() {
     mem_start = (mem_block_t *)mem;
     mem_start->size = HEAP_SIZE_BYTES - MEM_BLOCK_NODE_SIZE;
@@ -99,8 +104,8 @@ void mem_free(void *ptr) {
 
 void reverse(char *s) {
     char c;
-    int len = strlen(s);
-    for (int i = 0; i < len / 2; i++) {
+    size_t len = strlen(s);
+    for (size_t i = 0; i < len / 2; i++) {
         c = s[i];
         s[i] = s[len - i - 1];
         s[len - i - 1] = c;

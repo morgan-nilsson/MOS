@@ -3,7 +3,7 @@
 #include "libs/string.h"
 #include "libs/stdtypes.h"
 
-unsigned int strlen(const char *s) {
+size_t strlen(const char *s) {
     if (s == 0) return 0;
     unsigned int i = 0;
     while (s[i] != '\0') i++;
@@ -13,14 +13,14 @@ unsigned int strlen(const char *s) {
 void strcpy(char* dest, const char* src) {
     if (dest == NULL) return;
     if (src == NULL) return;
-    int length = strlen(src);
-    for (int i = 0; i < length; i++) {
+    size_t length = strlen(src);
+    for (size_t i = 0; i < length; i++) {
         dest[i] = src[i];
     }
     dest[length] = '\0';
 }
 
-void strncpy(char* dest, const char* src, unsigned int n) {
+void strncpy(char* dest, const char* src, size_t n) {
     if (dest == NULL) return;
     if (src == NULL) return;
     size_t length = strlen(src);
@@ -41,7 +41,7 @@ int strcmp(const char *s1, const char *s2) {
     return *s1 < *s2 ? -1 : 1;
 }
 
-int strncmp(const char *s1, const char *s2, unsigned int n) {
+int strncmp(const char *s1, const char *s2, size_t n) {
     while (*s1 && *s2 && n) {
         if (*s1 != *s2) return *s1 < *s2 ? -1 : 1;
         s1++;
@@ -136,7 +136,7 @@ void memcpy(void *dest, const void *src, size_t nbytes) {
 }
 
 void memset(void *dest, int c, size_t nbytes) {
-    unsigned char *ptr = (unsigned char*)dest;
+    uint8_t *ptr = (uint8_t *)dest;
     for (size_t index = 0; index < nbytes; ++index) {
         ptr[index] = c;
     }

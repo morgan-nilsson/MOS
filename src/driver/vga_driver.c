@@ -41,7 +41,7 @@ int get_cursor(void) {
  * @param c The character to set
  * @param offset The offset to set the character at
  */
-void set_char_at_video_memory(char c, int offset) {
+void set_char_at_video_memory(unsigned char c, int offset) {
 
     unsigned char* vidmem = (unsigned char*)VGA_ADDRESS;
     vidmem[offset] = c;

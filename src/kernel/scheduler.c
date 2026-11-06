@@ -12,6 +12,8 @@ uint32_t process_id = 0;
 
 process_queue_t process_queue;
 
+void switch_task(registers_t *src_regs);
+
 void activate_scheduler() {
 
     if (process_queue.current_task == NULL) {

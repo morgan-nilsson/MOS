@@ -7,6 +7,10 @@
 
 isr_t interrupt_handlers[256];
 
+// Exported to interrupt.asm
+void isr_handler(registers_t *regs);
+void irq_handler(registers_t *regs);
+
 void isr_install() {
     // internal IRSs
     set_idt_gate(0, (uintptr_t)isr0, 0x08, 0x8E);

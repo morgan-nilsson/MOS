@@ -7,6 +7,8 @@
 #include "driver/keyboard.h"
 #include "libs/stdlib.h"
 
+uint8_t get_scancode();
+
 static void keyboard_callback(registers_t *r) {
     UNUSED(r);
     uint8_t scancode = port_byte_in(0x60);
