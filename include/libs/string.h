@@ -4,6 +4,7 @@
 #define SRC_LIBS_INCLUDE_STRING_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -23,7 +24,7 @@ char *strstr(const char *haystack, const char *needle);
 char *strtok(char *str, const char *delim);
 
 void memcpy(void *dest, const void* src, size_t nbytes);
-void memset(void *dest, int c, size_t nbytes);
+void memset(void *dest, uint8_t c, size_t nbytes);
 int memcmp(const void *s1, const void *s2, size_t nbytes);
 
 #endif

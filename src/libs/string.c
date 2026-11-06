@@ -135,7 +135,7 @@ void memcpy(void *dest, const void *src, size_t nbytes) {
     }
 }
 
-void memset(void *dest, int c, size_t nbytes) {
+void memset(void *dest, uint8_t c, size_t nbytes) {
     uint8_t *ptr = (uint8_t *)dest;
     for (size_t index = 0; index < nbytes; ++index) {
         ptr[index] = c;

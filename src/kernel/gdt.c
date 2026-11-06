@@ -10,6 +10,9 @@ static gdt_entry_t gdt_entries[GDT_ENTRIES];
 
 static tss_t tss_entry;
 
+void init_tss();
+void gdt_set_gate(int num, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran);
+
 void gdt_set_gate(int num, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran) {
     gdt_entries[num].base_low = (base & 0xFFFF);
     gdt_entries[num].base_middle = (base >> 16) & 0xFF;

@@ -1,5 +1,7 @@
 // Copyright 2025 Morgan Nilsson
 
+#include <stdckdint.h>
+
 #include "kernel/system.h"
 #include "kernel/isr.h"
 #include "kernel/idt.h"
@@ -77,7 +79,7 @@ int sys_write(int fd, int buf_ptr, int count, int unused, int unused2) {
     }
 }
 
-int sys_sleep(int ms, int unused, int unused2, int unused3, int unused4) {
+int sys_sleep(uint32_t ms, int unused, int unused2, int unused3, int unused4) {
 
     UNUSED(unused);
     UNUSED(unused2);

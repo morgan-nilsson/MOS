@@ -11,6 +11,10 @@
 #include "kernel/gdt.h"
 #include "kernel/paging.h"
 
+void _start(void);
+void task1(void);
+void task2(void);
+
 void task1(void) {
     write_string("1");
     while (1) {
