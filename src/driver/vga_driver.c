@@ -181,7 +181,7 @@ void write_hex_8(uint8_t n) {
 
 }
 
-void write_int(isize n) {
+void write_int(int32_t n) {
 
     char number[33];
 

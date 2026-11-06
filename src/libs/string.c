@@ -23,7 +23,7 @@ void strcpy(char* dest, const char* src) {
 void strncpy(char* dest, const char* src, unsigned int n) {
     if (dest == NULL) return;
     if (src == NULL) return;
-    usize length = strlen(src);
+    size_t length = strlen(src);
     if (n < length) length = n;
     for (unsigned int i = 0; i < n; i++) {
         dest[i] = src[i];
@@ -54,17 +54,17 @@ int strncmp(const char *s1, const char *s2, unsigned int n) {
 }
 
 void strcat(char *dest, const char *src) {
-    usize dest_len = strlen(dest);
-    usize src_len = strlen(src);
-    for (usize i = 0; i < src_len; i++) {
+    size_t dest_len = strlen(dest);
+    size_t src_len = strlen(src);
+    for (size_t i = 0; i < src_len; i++) {
         dest[dest_len + i] = src[i];
     }
     dest[dest_len + src_len] = '\0';
 }
 
-void strncat(char *dest, const char *src, usize n) {
-    usize dest_len = strlen(dest);
-    usize src_len = strlen(src);
+void strncat(char *dest, const char *src, size_t n) {
+    size_t dest_len = strlen(dest);
+    size_t src_len = strlen(src);
     if (n < src_len) src_len = n;
     for (unsigned int i = 0; i < src_len; i++) {
         dest[dest_len + i] = src[i];
@@ -126,26 +126,26 @@ char *strtok(char *str, const char *delim) {
 }
 
 // copys n bytes from src to dest
-void memcpy(void *dest, const void *src, usize nbytes) {
+void memcpy(void *dest, const void *src, size_t nbytes) {
     unsigned char *d = (unsigned char*)dest;
     const unsigned char *s = (const unsigned char*)src;
 
-    for (usize i = 0; i < nbytes; i++) {
+    for (size_t i = 0; i < nbytes; i++) {
         d[i] = s[i];
     }
 }
 
-void memset(void *dest, int c, usize nbytes) {
+void memset(void *dest, int c, size_t nbytes) {
     unsigned char *ptr = (unsigned char*)dest;
-    for (usize index = 0; index < nbytes; ++index) {
+    for (size_t index = 0; index < nbytes; ++index) {
         ptr[index] = c;
     }
 }
 
-int memcmp(const void *s1, const void *s2, usize n) {
+int memcmp(const void *s1, const void *s2, size_t n) {
     const unsigned char *a = (const unsigned char*)s1;
     const unsigned char *b = (const unsigned char*)s2;
-    for (usize i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         if (a[i] != b[i]) return a[i] < b[i] ? -1 : 1;
     }
     return 0;

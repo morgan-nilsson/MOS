@@ -6,7 +6,7 @@ void arena_init(arena_t* arena) {
     arena->capacity = ARENA_DEFAULT_CAPACITY;
 }
 
-void arena_init_with_capacity(arena_t* arena, usize capacity) {
+void arena_init_with_capacity(arena_t* arena, size_t capacity) {
     arena->data = mem_alloc(capacity);
     arena->size = 0;
     arena->capacity = capacity;
@@ -19,9 +19,9 @@ void arena_destroy(arena_t* arena) {
     arena->capacity = 0;
 }
 
-void arena_push(arena_t* arena, const void* data, usize size) {
+void arena_push(arena_t* arena, const void* data, size_t size) {
     if (arena->size + size > arena->capacity) {
-        usize new_capacity = arena->capacity * ARENA_GROWTH_FACTOR;
+        size_t new_capacity = arena->capacity * ARENA_GROWTH_FACTOR;
         while (new_capacity < arena->size + size) {
             new_capacity *= ARENA_GROWTH_FACTOR;
         }
