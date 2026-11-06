@@ -1,3 +1,4 @@
-build/*
+build/
+build-cmake/
 notes.txt
 .vscode/
