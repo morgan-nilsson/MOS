@@ -23,10 +23,8 @@ set(KERNEL_CFLAGS
     -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow
     -fno-omit-frame-pointer)
 target_compile_options(kernel PRIVATE "$<$<COMPILE_LANGUAGE:C>:${KERNEL_CFLAGS}>")
-# DWARF debug info for the kernel asm too, so gdb can step through interrupt.asm
 target_compile_options(kernel PRIVATE "$<$<COMPILE_LANGUAGE:ASM_NASM>:-g;-Fdwarf>")
 
-# link to an ELF (keeps symbols for gdb), then strip to the flat binary the bootloader loads
 set_target_properties(kernel PROPERTIES SUFFIX .elf
     LINK_DEPENDS ${CMAKE_BINARY_DIR}/linker.ld)
 add_dependencies(kernel linker_script)

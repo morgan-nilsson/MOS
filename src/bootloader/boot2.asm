@@ -209,9 +209,6 @@ start_protected_mode:
     mov fs, ax
     mov gs, ax
 
-    mov ax, 0x08
-    mov cs, ax
-
     mov ax, 0x10
     mov ss, ax
     mov esp, PHY_EXTENDED_BIOS_DATA_AREA_START
